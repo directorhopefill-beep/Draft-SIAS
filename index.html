@@ -842,9 +842,13 @@ function doLogin(){
  alog('LOGIN','Auth','Successful login');bootApp();
 }
 function doLogout(){
- alog('LOGOUT','Auth','User logged out');CU=null;DB.set('session',null);
- document.getElementById('AP').className='';document.getElementById('AP').style.display='none';
+ if(window.CU) alog('LOGOUT','Auth','User logged out');
+ CU=null; DB.set('session',null);
+ document.getElementById('AP').className='';
+ document.getElementById('AP').style.display='none';
  document.getElementById('LS').style.display='flex';
+ var lu=document.getElementById('lun'); if(lu) lu.value='';
+ var lp=document.getElementById('lpw'); if(lp) lp.value='';
 }
 function bootApp(){
  document.getElementById('LS').style.display='none';
@@ -1146,6 +1150,10 @@ document.addEventListener('DOMContentLoaded',function(){
  applyResponsive();
 });
 </script>
+
+
+
+
 </head>
 <body>
 <div id="TT" class="sh" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A3557;color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;z-index:99999;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;max-width:90vw;text-align:center"></div>
