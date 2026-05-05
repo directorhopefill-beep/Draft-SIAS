@@ -492,6 +492,18 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 @media(max-width:768px){.folder-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;padding:10px}}
 
 /* ── CONFERENCE ROOM ─────────────────────────────────────────────── */
+.ccb{background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:10px;
+padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;
+text-align:center;min-width:52px;line-height:1.3}
+.ccb:hover{background:#30363D}
+.ccb.on{background:#1F6FEB;border-color:#1F6FEB;color:#fff}
+.ccb.active{background:#238636;border-color:#238636;color:#fff}
+.ccb.danger{background:#da3633;border-color:#da3633;color:#fff}
+@media(max-width:600px){
+ .ccb{padding:6px 10px;min-width:42px;font-size:13px}
+ #conf-side{width:100%!important;position:fixed;bottom:0;left:0;right:0;max-height:50vh;z-index:100}
+ #conf-main{flex:1}
+}
 .conf-ctrl-btn{background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
 .conf-ctrl-btn:hover{background:#30363D}
 .conf-ctrl-btn.on{background:#1F6FEB;border-color:#1F6FEB;color:#fff}
@@ -3168,181 +3180,184 @@ document.addEventListener('DOMContentLoaded',function(){
 ══════════════════════════════════════════════════════════════ -->
 <div class="pv" id="vmeetings">
  <div class="sh2">
-  <div><h2>&#127909; Meetings &amp; Conferencing</h2><p>Schedule, host and manage meetings with video, voice and collaboration tools</p></div>
+  <div><h2>&#127909; Meetings &amp; Conferencing</h2><p>Schedule, host and manage WebRTC meetings with video, voice and collaboration tools</p></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
    <button class="btn bsk bsm" onclick="openNewMeeting()">+ Schedule Meeting</button>
    <button class="btn bol bsm" onclick="openJoinMeeting()">&#128279; Join by Code</button>
   </div>
  </div>
 
- <!-- Stats row -->
  <div class="g4 mb4" id="mtg-stats"></div>
 
- <div class="tbr">
-  <button class="tbt on" onclick="swTab('meetings','upcoming',this)">&#128197; Upcoming</button>
-  <button class="tbt" onclick="swTab('meetings','live',this)">&#128308; Live Now <span class="bdg" id="bdg-live" style="display:none">0</span></button>
-  <button class="tbt" onclick="swTab('meetings','past',this)">&#128196; Past Meetings</button>
-  <button class="tbt" onclick="swTab('meetings','myroom',this)">&#127909; My Room</button>
-  <button class="tbt" onclick="swTab('meetings','archive',this)">&#128269; Archive &amp; Notes</button>
+ <!-- Mobile-friendly scrollable tab bar -->
+ <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">
+  <div class="tbr" style="min-width:480px">
+   <button class="tbt on" onclick="swTab('meetings','upcoming',this)">&#128197; Upcoming</button>
+   <button class="tbt" onclick="swTab('meetings','live',this)">&#128308; Live <span class="bdg" id="bdg-live" style="display:none">0</span></button>
+   <button class="tbt" onclick="swTab('meetings','past',this)">&#128196; Past</button>
+   <button class="tbt" onclick="swTab('meetings','myroom',this)">&#127968; My Room</button>
+   <button class="tbt" onclick="swTab('meetings','archive',this)">&#128269; Archive</button>
+  </div>
  </div>
 
- <!-- UPCOMING -->
  <div class="tp on" id="tp-meetings-upcoming">
   <div id="mtg-upcoming-list"></div>
  </div>
 
- <!-- LIVE NOW -->
  <div class="tp" id="tp-meetings-live">
-  <div class="al in mb4"><span>&#128308;</span> These meetings are currently in session. Join immediately.</div>
+  <div class="al in mb4" style="margin-bottom:14px"><span>&#128308;</span> Meetings currently in session — join immediately.</div>
   <div id="mtg-live-list"></div>
  </div>
 
- <!-- PAST MEETINGS -->
  <div class="tp" id="tp-meetings-past">
-  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-   <input type="month" id="mtg-month-filter" onchange="loadMeetings()" style="padding:6px 10px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px">
-   <input type="text" id="mtg-search" placeholder="Search meetings..." oninput="loadMeetings()" style="padding:6px 12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px;flex:1;min-width:160px">
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+   <input type="month" id="mtg-month-filter" onchange="loadMeetings()" style="padding:7px 10px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px;color:var(--t1)">
+   <input type="text" id="mtg-search" placeholder="Search meetings..." oninput="loadMeetings()" style="padding:7px 12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px;flex:1;min-width:150px;color:var(--t1)">
   </div>
   <div id="mtg-past-list"></div>
  </div>
 
- <!-- MY ROOM -->
  <div class="tp" id="tp-meetings-myroom">
   <div class="g2">
    <div class="cd">
-    <div class="cdh"><h3>&#127968; My Personal Meeting Room</h3></div>
+    <div class="cdh"><h3>&#127968; My Personal Room</h3></div>
     <div id="my-room-info"></div>
    </div>
    <div class="cd">
     <div class="cdh"><h3>&#9881; Room Settings</h3></div>
     <div style="padding:14px">
-     <div class="fi"><label>Room Name</label><input type="text" id="room-name" placeholder="e.g. John's Meeting Room"></div>
-     <div class="fi"><label>Default Agenda</label><textarea id="room-agenda" placeholder="Default agenda for quick meetings..." style="min-height:80px"></textarea></div>
-     <div style="margin-bottom:12px">
-      <label style="font-size:12px;font-weight:600;color:var(--t3);margin-bottom:8px;display:block">Default Access</label>
-      <select id="room-access" style="width:100%;padding:8px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px">
+     <div class="fi"><label>Room Name</label><input type="text" id="room-name" placeholder="e.g. Allan's Meeting Room"></div>
+     <div class="fi"><label>Default Agenda</label><textarea id="room-agenda" placeholder="Default agenda..." style="min-height:70px"></textarea></div>
+     <div class="fi"><label>Default Access</label>
+      <select id="room-access" style="width:100%;padding:9px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
+       <option value="org">All Staff</option>
        <option value="invite">Invite Only</option>
-       <option value="org">All Staff (Anyone in Organisation)</option>
        <option value="link">Anyone with Link</option>
       </select>
      </div>
-     <button class="btn bsk" style="width:100%" onclick="saveRoomSettings()">&#10003; Save Room Settings</button>
+     <button class="btn bsk" style="width:100%" onclick="saveRoomSettings()">Save Settings</button>
     </div>
    </div>
   </div>
  </div>
 
- <!-- ARCHIVE & NOTES -->
  <div class="tp" id="tp-meetings-archive">
-  <div class="al in mb4"><span>&#128269;</span> All meeting minutes, decisions, action items and attendance records are searchable here.</div>
-  <div style="margin-bottom:14px">
-   <input type="text" id="archive-search" placeholder="Search minutes, decisions, action items..." oninput="searchArchive()" style="width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px">
+  <div class="fi" style="margin-bottom:14px">
+   <input type="text" id="archive-search" placeholder="Search minutes, decisions, action items..." oninput="searchArchive()" style="width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
   </div>
   <div id="mtg-archive-list"></div>
  </div>
 </div>
 
-<!-- ─── CONFERENCE ROOM (full-screen overlay) ─────────────────── -->
-<div id="conf-room" style="display:none;position:fixed;inset:0;background:#0D1117;z-index:10000;flex-direction:column">
- <!-- Header bar -->
- <div style="background:#161B22;padding:10px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #30363D;flex-shrink:0">
-  <div style="flex:1">
-   <div id="conf-title" style="color:#fff;font-weight:700;font-size:15px">Meeting</div>
-   <div id="conf-info" style="color:#8B949E;font-size:12px">Connecting...</div>
+<!-- ═══════════════════════════════════════════════════════════════
+     CONFERENCE ROOM — full-screen overlay
+═══════════════════════════════════════════════════════════════ -->
+<div id="conf-room" style="display:none;position:fixed;inset:0;background:#0D1117;z-index:10000;flex-direction:column;font-family:inherit">
+
+ <!-- ── TOP BAR ─────────────────────────────────────────────────── -->
+ <div id="conf-topbar" style="background:#161B22;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363D;flex-shrink:0;flex-wrap:wrap">
+  <div style="flex:1;min-width:0">
+   <div id="conf-title" style="color:#fff;font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Meeting</div>
+   <div id="conf-info" style="color:#8B949E;font-size:11px;margin-top:1px">Connecting...</div>
   </div>
-  <div id="conf-timer" style="color:#58A6FF;font-size:14px;font-weight:700;font-family:monospace">00:00:00</div>
-  <div style="display:flex;gap:8px">
-   <span id="conf-rec-badge" style="display:none;background:#da3633;color:#fff;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700">&#9679; REC</span>
-   <span id="conf-attendee-count" style="background:#21262D;color:#8B949E;padding:3px 10px;border-radius:12px;font-size:12px">1 participant</span>
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+   <span id="conf-timer" style="color:#58A6FF;font-size:13px;font-weight:700;font-family:monospace">00:00:00</span>
+   <span id="conf-rec-badge" style="display:none;background:#da3633;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">&#9679; REC</span>
+   <span id="conf-attendee-count" style="background:#21262D;color:#8B949E;padding:2px 8px;border-radius:10px;font-size:11px">1</span>
+   <button onclick="shareMeetingLink()" style="background:#21262D;color:#58A6FF;border:1px solid #30363D;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">&#128279; Share Link</button>
+   <button onclick="minimizeMeeting()" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer" title="Keep meeting running, work elsewhere">&#8212; Min</button>
+   <button onclick="endOrLeaveMeeting()" style="background:#da3633;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">&#9209;</button>
   </div>
-  <button onclick="minimizeMeeting()" title="Minimize — continue working while in meeting" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:600">&#8212; Minimize</button>
-  <button onclick="endOrLeaveMeeting()" id="btn-end-leave" style="background:#da3633;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">&#9209; End</button>
  </div>
 
- <!-- Main conference area -->
- <div style="flex:1;display:grid;grid-template-columns:1fr 320px;overflow:hidden">
-  <!-- Video grid -->
-  <div style="display:flex;flex-direction:column;overflow:hidden">
-   <div id="video-grid" style="flex:1;display:grid;gap:6px;padding:12px;background:#0D1117;overflow:hidden;align-content:start"></div>
-   <!-- Whiteboard -->
-   <div id="whiteboard-panel" style="display:none;flex:1;background:#1C2128;padding:8px">
-    <canvas id="wb-canvas" style="width:100%;height:100%;background:#fff;border-radius:8px;cursor:crosshair;touch-action:none"></canvas>
-   </div>
-   <!-- Screen share placeholder -->
-   <div id="screenshare-panel" style="display:none;flex:1;background:#1C2128;align-items:center;justify-content:center">
-    <div style="color:#8B949E;text-align:center">
-     <div style="font-size:40px;margin-bottom:8px">&#128190;</div>
-     <div>Screen share in progress</div>
+ <!-- ── MAIN AREA: video + side panel ────────────────────────────── -->
+ <div style="flex:1;display:flex;overflow:hidden;min-height:0">
+
+  <!-- Video / Whiteboard / Screen share area -->
+  <div id="conf-main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0D1117;min-width:0">
+   <div id="video-grid" style="flex:1;display:grid;grid-template-columns:1fr;gap:6px;padding:10px;overflow:hidden;align-content:start"></div>
+   <div id="whiteboard-panel" style="display:none;flex:1;flex-direction:column;background:#1C2128;padding:8px;min-height:200px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+     <span style="color:#8B949E;font-size:12px;font-weight:600">Whiteboard</span>
+     <div style="display:flex;gap:6px">
+      <input type="color" id="wb-color" value="#1F6FEB" style="width:30px;height:24px;border:none;cursor:pointer;border-radius:4px">
+      <input type="range" id="wb-size" min="1" max="20" value="3" style="width:60px">
+      <button onclick="wbClear()" style="background:#da3633;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">Clear</button>
+     </div>
     </div>
+    <canvas id="wb-canvas" style="flex:1;background:#fff;border-radius:8px;cursor:crosshair;touch-action:none;width:100%;height:100%"></canvas>
    </div>
+   <div id="screenshare-panel" style="display:none;flex:1;background:#1C2128;align-items:center;justify-content:center">
+    <video id="screenshare-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:contain"></video>
+   </div>
+   <!-- Hand raised banner -->
+   <div id="hand-banner" style="display:none;background:#B45309;color:#fff;text-align:center;padding:6px;font-size:13px;font-weight:700">&#9995; Your hand is raised</div>
   </div>
 
-  <!-- Right panel: agenda / chat / actions -->
-  <div style="background:#161B22;border-left:1px solid #30363D;display:flex;flex-direction:column;overflow:hidden">
-   <!-- Panel tabs -->
+  <!-- Side panel -->
+  <div id="conf-side" style="width:300px;background:#161B22;border-left:1px solid #30363D;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;transition:width .2s">
    <div style="display:flex;border-bottom:1px solid #30363D;flex-shrink:0">
-    <button onclick="switchConfPanel('agenda')" id="cpanel-agenda" style="flex:1;padding:8px 4px;background:#1F6FEB;color:#fff;border:none;font-size:11px;font-weight:600;cursor:pointer">Agenda</button>
-    <button onclick="switchConfPanel('chat')" id="cpanel-chat" style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:11px;cursor:pointer">Chat</button>
-    <button onclick="switchConfPanel('actions')" id="cpanel-actions" style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:11px;cursor:pointer">Actions</button>
-    <button onclick="switchConfPanel('people')" id="cpanel-people" style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:11px;cursor:pointer">People</button>
+    <button onclick="switchConfPanel('agenda')"  id="cpanel-agenda"  style="flex:1;padding:8px 4px;background:#1F6FEB;color:#fff;border:none;font-size:10px;font-weight:600;cursor:pointer">Agenda</button>
+    <button onclick="switchConfPanel('chat')"    id="cpanel-chat"    style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer">Chat</button>
+    <button onclick="switchConfPanel('actions')" id="cpanel-actions" style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer">Actions</button>
+    <button onclick="switchConfPanel('people')"  id="cpanel-people"  style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer">People</button>
+    <button onclick="toggleSidePanel()" style="padding:8px 6px;background:transparent;color:#8B949E;border:none;font-size:12px;cursor:pointer" title="Collapse panel">&#9664;</button>
    </div>
-
    <!-- Agenda panel -->
-   <div id="cpanel-agenda-body" style="flex:1;overflow-y:auto;padding:12px">
+   <div id="cpanel-agenda-body" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px">
     <div id="conf-agenda-list"></div>
-    <div style="margin-top:12px;border-top:1px solid #30363D;padding-top:10px">
-     <div style="color:#8B949E;font-size:11px;font-weight:600;margin-bottom:6px;text-transform:uppercase">Decisions Captured</div>
-     <div id="conf-decisions-list" style="font-size:12px;color:#E6EDF3"></div>
-     <div style="display:flex;gap:6px;margin-top:8px">
-      <input id="conf-decision-input" placeholder="Record a decision..." style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:6px 10px;color:#E6EDF3;font-size:12px;outline:none">
-      <button onclick="addDecision()" style="background:#238636;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer">+</button>
+    <div style="border-top:1px solid #30363D;padding-top:8px;margin-top:4px">
+     <div style="color:#8B949E;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Decisions</div>
+     <div id="conf-decisions-list" style="font-size:12px;color:#E6EDF3;margin-bottom:8px"></div>
+     <div style="display:flex;gap:5px">
+      <input id="conf-decision-input" placeholder="Add decision..." style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:6px 8px;color:#E6EDF3;font-size:12px;outline:none">
+      <button onclick="addDecision()" style="background:#238636;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;font-weight:700">+</button>
      </div>
     </div>
    </div>
-
    <!-- Chat panel -->
    <div id="cpanel-chat-body" style="display:none;flex:1;flex-direction:column;overflow:hidden">
     <div id="conf-chat-messages" style="flex:1;overflow-y:auto;padding:10px;font-size:13px"></div>
-    <div style="padding:8px;border-top:1px solid #30363D;display:flex;gap:6px">
-     <input id="conf-chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChatMsg()" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:7px 10px;color:#E6EDF3;font-size:13px;outline:none">
-     <button onclick="sendChatMsg()" style="background:#1F6FEB;color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:13px;cursor:pointer">&#10148;</button>
+    <div style="padding:8px;border-top:1px solid #30363D;display:flex;gap:5px">
+     <input id="conf-chat-input" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChatMsg()" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:7px 10px;color:#E6EDF3;font-size:13px;outline:none">
+     <button onclick="sendChatMsg()" style="background:#1F6FEB;color:#fff;border:none;border-radius:6px;padding:7px 10px;cursor:pointer">&#10148;</button>
     </div>
    </div>
-
-   <!-- Action items panel -->
-   <div id="cpanel-actions-body" style="display:none;flex:1;overflow-y:auto;padding:12px">
-    <div id="conf-actions-list" style="font-size:13px;color:#E6EDF3;margin-bottom:10px"></div>
+   <!-- Actions panel -->
+   <div id="cpanel-actions-body" style="display:none;flex:1;overflow-y:auto;padding:10px">
+    <div id="conf-actions-list" style="font-size:12px;color:#E6EDF3;margin-bottom:10px"></div>
     <div style="border-top:1px solid #30363D;padding-top:10px">
-     <div style="color:#8B949E;font-size:11px;font-weight:600;margin-bottom:8px;text-transform:uppercase">Add Action Item</div>
-     <div style="margin-bottom:6px"><input id="ai-task" placeholder="Action task..." style="width:100%;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:7px 10px;color:#E6EDF3;font-size:12px;outline:none"></div>
-     <div style="display:flex;gap:6px;margin-bottom:6px">
-      <select id="ai-owner" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:6px;color:#E6EDF3;font-size:12px"></select>
-      <input type="date" id="ai-due" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:6px;color:#E6EDF3;font-size:12px">
+     <div style="color:#8B949E;font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:6px">Add Action</div>
+     <input id="ai-task" placeholder="Task..." style="width:100%;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:7px 8px;color:#E6EDF3;font-size:12px;outline:none;margin-bottom:5px">
+     <div style="display:flex;gap:5px;margin-bottom:5px">
+      <select id="ai-owner" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:5px;color:#E6EDF3;font-size:11px"></select>
+      <input type="date" id="ai-due" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:5px;color:#E6EDF3;font-size:11px">
      </div>
-     <button onclick="addActionItem()" style="width:100%;background:#238636;color:#fff;border:none;border-radius:6px;padding:8px;font-size:12px;font-weight:600;cursor:pointer">+ Add Action Item</button>
+     <button onclick="addActionItem()" style="width:100%;background:#238636;color:#fff;border:none;border-radius:6px;padding:8px;font-size:12px;font-weight:600;cursor:pointer">+ Add</button>
     </div>
    </div>
-
    <!-- People panel -->
    <div id="cpanel-people-body" style="display:none;flex:1;overflow-y:auto;padding:10px">
-    <div id="conf-people-list" style="font-size:13px;color:#E6EDF3"></div>
+    <div id="conf-people-list" style="font-size:12px;color:#E6EDF3"></div>
    </div>
   </div>
  </div>
 
- <!-- Control bar -->
- <div id="conf-controls" style="background:#161B22;border-top:1px solid #30363D;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;flex-wrap:wrap">
-  <button id="btn-mic" onclick="toggleMic()" class="conf-ctrl-btn on" title="Mute/Unmute">&#127908; Mic</button>
-  <button id="btn-cam" onclick="toggleCam()" class="conf-ctrl-btn on" title="Camera on/off">&#128247; Cam</button>
-  <button id="btn-screen" onclick="toggleScreenShare()" class="conf-ctrl-btn" title="Share screen">&#128190; Share</button>
-  <button id="btn-wb" onclick="toggleWhiteboard()" class="conf-ctrl-btn" title="Whiteboard">&#9998; Board</button>
-  <button id="btn-rec" onclick="toggleRecording()" class="conf-ctrl-btn" title="Record">&#9679; Record</button>
-  <button id="btn-hand" onclick="raiseHand()" class="conf-ctrl-btn" title="Raise hand">&#9995; Hand</button>
-  <button id="btn-lowbw" onclick="toggleLowBandwidth()" class="conf-ctrl-btn" title="Low bandwidth mode">&#128246; Audio Only</button>
-  <button onclick="minimizeMeeting()" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer" title="Keep meeting running, work elsewhere">&#8212; Minimize</button>
-  <button onclick="endOrLeaveMeeting()" id="btn-end-leave-2" style="background:#da3633;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer">&#9209; Leave</button>
+ <!-- ── CONTROL BAR ──────────────────────────────────────────────── -->
+ <div id="conf-controls" style="background:#161B22;border-top:1px solid #30363D;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;flex-wrap:wrap">
+  <button id="btn-mic"    onclick="toggleMic()"           class="ccb on"  title="Mute/Unmute">&#127908;<br><span style="font-size:9px">Mic</span></button>
+  <button id="btn-cam"    onclick="toggleCam()"           class="ccb on"  title="Camera on/off">&#128247;<br><span style="font-size:9px">Cam</span></button>
+  <button id="btn-screen" onclick="toggleScreenShare()"   class="ccb"     title="Share screen">&#128190;<br><span style="font-size:9px">Share</span></button>
+  <button id="btn-wb"     onclick="toggleWhiteboard()"    class="ccb"     title="Whiteboard">&#9998;<br><span style="font-size:9px">Board</span></button>
+  <button id="btn-rec"    onclick="toggleRecording()"     class="ccb"     title="Record">&#9679;<br><span style="font-size:9px">Rec</span></button>
+  <button id="btn-hand"   onclick="raiseHand()"           class="ccb"     title="Raise hand">&#9995;<br><span style="font-size:9px">Hand</span></button>
+  <button id="btn-lowbw"  onclick="toggleLowBandwidth()"  class="ccb"     title="Audio-only mode">&#128246;<br><span style="font-size:9px">Audio</span></button>
+  <div style="width:1px;height:36px;background:#30363D;margin:0 4px"></div>
+  <button onclick="minimizeMeeting()" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer" title="Minimize">&#8212;</button>
+  <button onclick="endOrLeaveMeeting()" style="background:#da3633;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer">&#9209; Leave</button>
  </div>
 </div>
+
 
 <!-- ─── SCHEDULE MEETING MODAL ────────────────────────────────── -->
 <div class="mo" id="mnewmtg"><div class="mc" style="max-width:640px">
@@ -4527,216 +4542,384 @@ function alog(act,mod,det){
  log.unshift({ts:new Date().toISOString(),user:CU?.sn||'System',act:act,mod:mod,det:det,ip:ips[Math.floor(Math.random()*ips.length)]+(Math.floor(Math.random()*200)+10)});
  if(log.length>1000)log.splice(1000);DB.set('audit',log);
 }
-// ══ MEETINGS & CONFERENCING MODULE ═══════════════════════════════════
+// ══ MEETINGS & CONFERENCING MODULE ════════════════════════════════════
 
-// ── DB helpers ────────────────────────────────────────────────────
+// ── DB init ───────────────────────────────────────────────────────
 function initMeetingsDB(){
  if(!DB.get('mtg_seeded')){
-  DB.set('meetings',[]);
-  DB.set('mtg_chat',[]);
-  DB.set('mtg_actions',[]);
-  DB.set('mtg_attendance',[]);
-  DB.set('mtg_seeded',true);
+  DB.set('meetings',[]); DB.set('mtg_seeded',true);
  }
 }
 function genMtgCode(){
  return 'COH-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*9000)+1000);
 }
+function getMeetingLink(code){
+ var base = window.location.href.split('?')[0].split('#')[0];
+ return base + '?join=' + code;
+}
 
 // ── State ──────────────────────────────────────────────────────────
-var _activeMtgId = null;
-var _mtgStartTime = null;
-var _mtgTimerInterval = null;
-var _localStream = null;
-var _peerConnections = {};
-var _micOn = true;
-var _camOn = true;
-var _recording = false;
-var _lowBW = false;
-var _whiteboardActive = false;
-var _screenSharing = false;
-var _wbCtx = null;
-var _wbDrawing = false;
-var _currentAgendaIdx = 0;
-var _invitees = [];
+var _activeMtgId   = null;
+var _mtgStartTime  = null;
+var _timerIv       = null;
+var _localStream   = null;
+var _screenStream  = null;
+var _micOn         = true;
+var _camOn         = true;
+var _handRaised    = false;
+var _recording     = false;
+var _lowBW         = false;
+var _wbActive      = false;
+var _ssActive      = false;
+var _sidePanelOpen = true;
+var _wbCtx         = null;
+var _wbDrawing     = false;
 var _confDecisions = [];
-var _confActions = [];
-var _confChat = [];
+var _confActions   = [];
+var _confChat      = [];
 var _confAttendees = [];
+var _agendaIdx     = 0;
 
-// ── LOAD MEETINGS PAGE ─────────────────────────────────────────────
+// ── LOAD PAGE ─────────────────────────────────────────────────────
 function loadMeetings(){
  initMeetingsDB();
  var meetings = DB.get('meetings')||[];
- var users = DB.get('users')||[];
- var now = new Date();
+ var users    = DB.get('users')||[];
+ var now      = new Date();
  var todayStr = now.toISOString().split('T')[0];
 
  // Stats
- var upcoming = meetings.filter(function(m){return m.date >= todayStr && m.status!=='ended';});
- var live = meetings.filter(function(m){return m.status==='live';});
- var myMtgs = meetings.filter(function(m){return m.hostId===CU.id || (m.invitees||[]).includes(CU.id);});
- var statsEl = document.getElementById('mtg-stats');
+ var upcoming = meetings.filter(function(m){ return m.date >= todayStr && m.status !== 'ended' && m.status !== 'cancelled'; });
+ var live     = meetings.filter(function(m){ return m.status === 'live'; });
+ var mine     = meetings.filter(function(m){ return m.hostId === CU.id || (m.invitees||[]).indexOf(CU.id) >= 0; });
+ var statsEl  = document.getElementById('mtg-stats');
  if(statsEl) statsEl.innerHTML =
-  '<div class="sc2"><div class="si" style="background:var(--skp)">&#128197;<\/div><div class="sl2">Upcoming<\/div><div class="sv">'+upcoming.length+'<\/div><div class="ss">Scheduled<\/div><\/div>'+
-  '<div class="sc2"><div class="si" style="background:var(--erb)">&#128308;<\/div><div class="sl2">Live Now<\/div><div class="sv ter">'+live.length+'<\/div><div class="ss">In progress<\/div><\/div>'+
-  '<div class="sc2"><div class="si" style="background:var(--okb)">&#128100;<\/div><div class="sl2">My Meetings<\/div><div class="sv">'+myMtgs.length+'<\/div><div class="ss">Invited or hosting<\/div><\/div>'+
-  '<div class="sc2"><div class="si" style="background:var(--nv)">&#128196;<\/div><div class="sl2">Total<\/div><div class="sv">'+meetings.length+'<\/div><div class="ss">All meetings<\/div><\/div>';
+  mkStat('&#128197;','Upcoming',upcoming.length,'Scheduled') +
+  mkStat2('&#128308;','Live Now',live.length,'In progress','ter') +
+  mkStat('&#128100;','My Meetings',mine.length,'Invited or hosting') +
+  mkStat('&#128196;','Total',meetings.length,'All time');
 
- // Live badge
- var liveBadge = document.getElementById('bdg-live');
- if(liveBadge){liveBadge.textContent=live.length;liveBadge.style.display=live.length?'inline':'none';}
- var navBadge = document.getElementById('bdg-meetings');
- var pendingInvites = meetings.filter(function(m){return (m.invitees||[]).includes(CU.id)&&m.status!=='ended'&&m.date>=todayStr;}).length;
- if(navBadge){navBadge.textContent=pendingInvites;navBadge.style.display=pendingInvites?'inline':'none';}
+ var lb = document.getElementById('bdg-live');
+ if(lb){ lb.textContent=live.length; lb.style.display=live.length?'inline':'none'; }
 
  renderUpcoming(meetings, users, now);
  renderLive(meetings, users);
  renderPast(meetings, users);
  renderMyRoom();
  renderArchive(meetings);
-}
 
+ // Auto-join from URL
+ var urlParams = new URLSearchParams(window.location.search);
+ var joinCode  = urlParams.get('join');
+ if(joinCode){
+  var m = meetings.find(function(x){ return x.code === joinCode; });
+  if(m && m.status !== 'ended' && m.status !== 'cancelled'){
+   window.history.replaceState(null,'',window.location.pathname);
+   joinConference(m.id);
+  }
+ }
+}
+function mkStat(ic,lbl,val,sub){ return '<div class="sc2"><div class="si">'+ic+'<\/div><div class="sl2">'+lbl+'<\/div><div class="sv">'+val+'<\/div><div class="ss">'+sub+'<\/div><\/div>'; }
+function mkStat2(ic,lbl,val,sub,cls){ return '<div class="sc2"><div class="si">'+ic+'<\/div><div class="sl2">'+lbl+'<\/div><div class="sv '+cls+'">'+val+'<\/div><div class="ss">'+sub+'<\/div><\/div>'; }
+
+// ── RENDER HELPERS ────────────────────────────────────────────────
 function mtgTypeLabel(t){
- return {team:'Team Meeting',board:'Board / Governance',donor:'Donor Meeting',
-  training:'Training',review:'Programme Review',emergency:'Emergency Meeting',
-  'one2one':'One-on-One'}[t]||t||'Meeting';
+ return {team:'Team Meeting',board:'Board/Governance',donor:'Donor Meeting',
+  training:'Training',review:'Programme Review',emergency:'Emergency',
+  'one2one':'One-on-One'}[t] || t || 'Meeting';
 }
 function mtgTypeBg(t){
  return {board:'var(--nv)',donor:'var(--sk)',training:'var(--ok)',
-  review:'var(--gd)',emergency:'var(--er)','one2one':'#7C3AED'}[t]||'var(--t3)';
+  emergency:'var(--er)','one2one':'#7C3AED',review:'#0891B2'}[t] || 'var(--t3)';
 }
 
-function renderMtgCard(m, users, now){
- var dateObj = new Date(m.date+'T'+(m.startTime||'09:00'));
- var mon = dateObj.toLocaleDateString('en-GB',{month:'short'});
- var day = dateObj.getDate();
- var isHost = m.hostId===CU.id;
- var isLive = m.status==='live';
+function renderMtgCard(m, users){
+ var d   = new Date(m.date+'T'+(m.startTime||'09:00'));
+ var mon = d.toLocaleDateString('en-GB',{month:'short'});
+ var day = d.getDate();
+ var isHost = m.hostId === CU.id;
+ var isLive = m.status === 'live';
+ var isEnded = m.status === 'ended' || m.status === 'cancelled';
  var invNames = (m.invitees||[]).slice(0,4).map(function(uid){
-  var u=users.find(function(x){return x.id===uid;})||{};return u.fn||'';
+  var u = users.find(function(x){ return x.id===uid; })||{};
+  return u.fn||'';
  }).filter(Boolean).join(', ');
- var invMore = (m.invitees||[]).length > 4 ? ' +'+((m.invitees||[]).length-4)+' more' : '';
- var actions = isLive
-  ? '<button onclick="joinConference(\''+m.id+'\')" style="background:var(--er);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer">&#128308; Join Live<\/button>'
-  : (isHost
-     ? '<button onclick="startMeeting(\''+m.id+'\')" style="background:linear-gradient(135deg,#1A3557,#2E75B6);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer">&#9654; Start Meeting<\/button>'
-       +'<button onclick="editMeeting(\''+m.id+'\')" style="background:var(--bg2);border:1px solid var(--bd);color:var(--t2);border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;margin-left:6px">&#9998; Edit<\/button>'
-       +'<button onclick="cancelMeeting(\''+m.id+'\')" style="background:var(--bg2);border:1px solid var(--bd);color:var(--er);border-radius:8px;padding:7px 12px;font-size:12px;cursor:pointer;margin-left:4px">&#128465;<\/button>'
-     : '<button onclick="joinConference(\''+m.id+'\')" style="background:linear-gradient(135deg,#1A3557,#2E75B6);color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer">Join<\/button>'
-    );
- return '<div class="mtg-card'+(isLive?' live':'')+'" >'+
-  '<div class="mtg-date-block"><div class="mtg-day">'+day+'<\/div><div class="mtg-mon">'+mon+'<\/div><\/div>'+
+ var link = getMeetingLink(m.code);
+
+ var btns = '';
+ if(isEnded){
+  btns = '<span style="font-size:12px;color:var(--t3)">&#9209; Ended<\/span>';
+ } else if(isLive){
+  btns = '<button onclick="joinConference(\''+m.id+'\')" style="background:var(--er);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer">&#128308; Join Live<\/button>';
+ } else if(isHost){
+  btns = '<button onclick="startMeeting(\''+m.id+'\')" class="btn bsk bsm">&#9654; Start<\/button>' +
+         '<button onclick="showMtgLink(\''+m.code+'\',\''+m.id+'\')" class="btn bol bsm">&#128279;<\/button>' +
+         '<button onclick="cancelMeeting(\''+m.id+'\')" class="btn bol bsm" style="color:var(--er)">&#128465;<\/button>';
+ } else {
+  btns = '<button onclick="joinConference(\''+m.id+'\')" class="btn bsk bsm">Join<\/button>' +
+         '<button onclick="showMtgLink(\''+m.code+'\',\''+m.id+'\')" class="btn bol bsm">&#128279;<\/button>';
+ }
+
+ return '<div class="mtg-card'+(isLive?' live':'')+(isEnded?' ended':'')+'" style="opacity:'+(isEnded?'.6':'1')+'">' +
+  '<div class="mtg-date-block'+(isLive?' live':'')+'"><div class="mtg-day">'+day+'<\/div><div class="mtg-mon">'+mon+'<\/div><\/div>'+
   '<div style="flex:1;min-width:0">'+
-   '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">'+
-    '<span style="font-weight:700;font-size:15px;color:var(--nv)">'+m.title+'<\/span>'+
-    '<span style="background:'+mtgTypeBg(m.type)+';color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600">'+mtgTypeLabel(m.type)+'<\/span>'+
-    (isHost?'<span style="background:var(--gd);color:var(--nv);font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700">HOST<\/span>':'')+
-    (isLive?'<span style="background:var(--er);color:#fff;font-size:9px;padding:2px 8px;border-radius:10px;font-weight:700">&#128308; LIVE<\/span>':'')+
+   '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px">'+
+    '<span style="font-weight:700;font-size:14px;color:var(--nv)">'+m.title+'<\/span>'+
+    '<span style="background:'+mtgTypeBg(m.type)+';color:#fff;font-size:9px;padding:1px 7px;border-radius:10px">'+mtgTypeLabel(m.type)+'<\/span>'+
+    (isHost?'<span style="background:var(--gd);color:var(--nv);font-size:9px;padding:1px 7px;border-radius:10px;font-weight:700">HOST<\/span>':'')+
+    (isLive?'<span style="background:var(--er);color:#fff;font-size:9px;padding:1px 7px;border-radius:10px;font-weight:700">&#128308; LIVE<\/span>':'')+
    '<\/div>'+
-   '<div style="font-size:12px;color:var(--t3);margin-bottom:5px">'+
-    '&#128336; '+(m.startTime||'09:00')+
-    (m.duration&&m.duration!=='0'?' &nbsp;&bull;&nbsp; '+m.duration+' min':'')+ 
-    ' &nbsp;&bull;&nbsp; &#128279; Code: <span style="font-family:monospace;font-weight:700;color:var(--sk)">'+m.code+'<\/span>'+
+   '<div style="font-size:11px;color:var(--t3);margin-bottom:4px">'+
+    (m.startTime||'09:00')+(m.duration&&m.duration!=='0'?' &bull; '+m.duration+'min':'')+
+    ' &bull; <span style="font-family:monospace;font-weight:700;color:var(--sk)">'+m.code+'<\/span>'+
    '<\/div>'+
-   (m.agenda?'<div style="font-size:12px;color:var(--t2);margin-bottom:6px;white-space:pre-line;line-height:1.5;max-height:60px;overflow:hidden">'+m.agenda.slice(0,200)+(m.agenda.length>200?'...':'')+'<\/div>':'')+
-   (invNames?'<div style="font-size:11px;color:var(--t4)">&#128100; '+invNames+invMore+'<\/div>':'')+
-   '<div class="mtg-actions">'+actions+'<\/div>'+
-  '<\/div>'+
- '<\/div>';
+   (invNames?'<div style="font-size:11px;color:var(--t4);margin-bottom:4px">&#128100; '+invNames+'<\/div>':'')+
+   '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px">'+btns+'<\/div>'+
+  '<\/div><\/div>';
 }
 
 function renderUpcoming(meetings, users, now){
  var todayStr = now.toISOString().split('T')[0];
  var list = meetings.filter(function(m){
-  return (m.date > todayStr || m.status==='live') && m.status!=='cancelled' && m.status!=='ended';
- }).sort(function(a,b){return (a.date+a.startTime).localeCompare(b.date+b.startTime);});
+  return m.status !== 'ended' && m.status !== 'cancelled' &&
+         (m.status === 'live' || m.date >= todayStr);
+ }).sort(function(a,b){ return (a.date+(a.startTime||'')).localeCompare(b.date+(b.startTime||'')); });
  var el = document.getElementById('mtg-upcoming-list');
- if(!el)return;
- if(!list.length){
-  el.innerHTML='<div class="es"><div class="ei">&#128197;<\/div><p>No upcoming meetings. Schedule one using the button above.<\/p><\/div>';
-  return;
- }
- el.innerHTML = list.map(function(m){return renderMtgCard(m,users,now);}).join('');
+ if(!el) return;
+ el.innerHTML = list.length
+  ? list.map(function(m){ return renderMtgCard(m, users); }).join('')
+  : '<div class="es"><div class="ei">&#128197;<\/div><p>No upcoming meetings. Click + Schedule Meeting to create one.<\/p><\/div>';
 }
 
 function renderLive(meetings, users){
- var live = meetings.filter(function(m){return m.status==='live';});
- var el = document.getElementById('mtg-live-list');
- if(!el)return;
- var now = new Date();
+ var live = meetings.filter(function(m){ return m.status === 'live'; });
+ var el   = document.getElementById('mtg-live-list');
+ if(!el) return;
  el.innerHTML = live.length
-  ? live.map(function(m){return renderMtgCard(m,users,now);}).join('')
-  : '<div class="es"><div class="ei">&#128308;<\/div><p>No meetings are live right now.<\/p><\/div>';
+  ? live.map(function(m){ return renderMtgCard(m, users); }).join('')
+  : '<div class="es"><div class="ei">&#128308;<\/div><p>No meetings live right now.<\/p><\/div>';
 }
 
 function renderPast(meetings, users){
- var todayStr = new Date().toISOString().split('T')[0];
- var monthFilter = (document.getElementById('mtg-month-filter')||{}).value||'';
+ var monthF = (document.getElementById('mtg-month-filter')||{}).value||'';
  var searchQ = ((document.getElementById('mtg-search')||{}).value||'').toLowerCase();
  var list = meetings.filter(function(m){
-  if(m.status==='live'||m.status==='scheduled') return false;
-  if(monthFilter && !m.date.startsWith(monthFilter)) return false;
+  if(m.status !== 'ended' && m.status !== 'cancelled') return false;
+  if(monthF && !m.date.startsWith(monthF)) return false;
   if(searchQ && !((m.title||'')+' '+(m.agenda||'')+(m.notes||'')).toLowerCase().includes(searchQ)) return false;
   return true;
- }).sort(function(a,b){return b.date.localeCompare(a.date);});
+ }).sort(function(a,b){ return b.date.localeCompare(a.date); });
  var el = document.getElementById('mtg-past-list');
- if(!el)return;
- if(!list.length){el.innerHTML='<div class="es"><div class="ei">&#128196;<\/div><p>No past meetings found.<\/p><\/div>';return;}
- var now = new Date();
+ if(!el) return;
+ if(!list.length){ el.innerHTML='<div class="es"><div class="ei">&#128196;<\/div><p>No past meetings found.<\/p><\/div>'; return; }
  el.innerHTML = list.map(function(m){
-  var att = (m.attendance||[]).length;
+  var att  = (m.attendance||[]).length;
   var acts = (m.actions||[]).length;
   var decs = (m.decisions||[]).length;
-  return '<div class="mtg-card">'+
-   '<div class="mtg-date-block" style="background:var(--t3)"><div class="mtg-day">'+new Date(m.date+'T12:00').getDate()+'<\/div><div class="mtg-mon">'+new Date(m.date+'T12:00').toLocaleDateString('en-GB',{month:'short'})+'<\/div><\/div>'+
+  var dt   = new Date(m.date+'T12:00');
+  return '<div class="mtg-card ended" style="opacity:.85">'+
+   '<div class="mtg-date-block" style="background:var(--t3)"><div class="mtg-day">'+dt.getDate()+'<\/div><div class="mtg-mon">'+dt.toLocaleDateString('en-GB',{month:'short'})+'<\/div><\/div>'+
    '<div style="flex:1">'+
     '<div style="font-weight:700;font-size:14px;color:var(--nv);margin-bottom:3px">'+m.title+'<\/div>'+
-    '<div style="font-size:12px;color:var(--t3);margin-bottom:8px">'+
-     m.date+' &bull; '+m.startTime+' &bull; <span style="font-family:monospace;color:var(--sk)">'+m.code+'<\/span>'+
-    '<\/div>'+
-    '<div style="display:flex;gap:12px;font-size:12px;color:var(--t2);flex-wrap:wrap;margin-bottom:10px">'+
-     '<span>&#128100; '+att+' attended<\/span>'+
-     '<span>&#9989; '+acts+' actions<\/span>'+
-     '<span>&#128204; '+decs+' decisions<\/span>'+
+    '<div style="font-size:11px;color:var(--t3);margin-bottom:6px">'+m.date+' &bull; '+m.startTime+' &bull; <span style="font-family:monospace;color:var(--sk)">'+m.code+'<\/span><\/div>'+
+    '<div style="display:flex;gap:10px;font-size:11px;color:var(--t3);margin-bottom:8px">'+
+     '<span>&#128100; '+att+' attended<\/span><span>&#9989; '+acts+' actions<\/span><span>&#128204; '+decs+' decisions<\/span>'+
     '<\/div>'+
     '<div style="display:flex;gap:6px">'+
-     '<button onclick="viewMinutes(\''+m.id+'\')" class="btn bol bxs">&#128196; View Minutes<\/button>'+
-     '<button onclick="downloadMinutesDirect(\''+m.id+'\')" class="btn bol bxs">&#11015; Download<\/button>'+
+     '<button onclick="viewMinutes(\''+m.id+'\')" class="btn bol bsm">&#128196; Minutes<\/button>'+
+     '<button onclick="downloadMinutesDirect(\''+m.id+'\')" class="btn bol bsm">&#11015; Export<\/button>'+
     '<\/div>'+
    '<\/div><\/div>';
  }).join('');
 }
 
 function renderMyRoom(){
- var room = DB.get('my_room_'+CU.id)||{name:CU.fn+'\'s Room',access:'org',agenda:''};
- var el = document.getElementById('my-room-info');
- var rn = document.getElementById('room-name');
- var ra = document.getElementById('room-access');
- var rg = document.getElementById('room-agenda');
+ var room  = DB.get('my_room_'+CU.id) || {};
+ if(!room.code) room.code = 'COH-ROOM-'+CU.sn;
+ var link  = getMeetingLink(room.code);
+ var el    = document.getElementById('my-room-info');
  if(el) el.innerHTML =
-  '<div style="padding:16px">'+
-   '<div style="font-size:14px;font-weight:700;color:var(--nv);margin-bottom:8px">'+room.name+'<\/div>'+
-   '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'+
-    '<span style="background:var(--skp);color:var(--sk);padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600">Personal Room<\/span>'+
+  '<div style="padding:14px">'+
+  '<div style="font-size:14px;font-weight:700;color:var(--nv);margin-bottom:4px">'+(room.name||CU.fn+'\'s Room')+'<\/div>'+
+  '<div style="background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:12px">'+
+   '<div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">Room Code<\/div>'+
+   '<div style="font-size:20px;font-weight:700;font-family:monospace;color:var(--sk);letter-spacing:3px">'+room.code+'<\/div>'+
+  '<\/div>'+
+  '<div style="background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:12px">'+
+   '<div style="font-size:11px;color:var(--t3);margin-bottom:5px">Shareable Link<\/div>'+
+   '<div style="font-size:11px;color:var(--sk);word-break:break-all;margin-bottom:8px">'+link+'<\/div>'+
+   '<div style="display:flex;gap:6px">'+
+    '<button onclick="copyMtgLink(\''+link+'\')" class="btn bol bsm">&#128203; Copy Link<\/button>'+
+    '<button onclick="startPersonalRoom()" class="btn bsk bsm">&#127909; Open Room<\/button>'+
    '<\/div>'+
-   '<div style="font-size:13px;color:var(--t2);margin-bottom:16px">Your personal room is always open. Share the code to invite anyone instantly.<\/div>'+
-   '<div style="background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:14px">'+
-    '<div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Your Room Code<\/div>'+
-    '<div style="font-size:22px;font-weight:700;font-family:monospace;color:var(--sk);letter-spacing:3px">'+(room.code||'MY-ROOM-'+CU.sn)+'<\/div>'+
-   '<\/div>'+
-   '<button onclick="startPersonalRoom()" style="width:100%;background:linear-gradient(135deg,#1A3557,#2E75B6);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer">&#127909; Open My Room Now<\/button>'+
+  '<\/div>'+
   '<\/div>';
- if(rn) rn.value = room.name||'';
+ var rn = document.getElementById('room-name');
+ if(rn) rn.value = room.name||CU.fn+'\'s Room';
+ var ra = document.getElementById('room-access');
  if(ra) ra.value = room.access||'org';
+ var rg = document.getElementById('room-agenda');
  if(rg) rg.value = room.agenda||'';
+}
+
+function renderArchive(meetings){
+ var q   = ((document.getElementById('archive-search')||{}).value||'').toLowerCase();
+ var all = meetings.filter(function(m){ return m.status==='ended'; });
+ var filtered = q ? all.filter(function(m){
+  return ((m.title||'')+(m.agenda||'')+JSON.stringify(m.decisions||[])+JSON.stringify(m.actions||[])).toLowerCase().includes(q);
+ }) : all;
+ filtered = filtered.sort(function(a,b){ return b.date.localeCompare(a.date); });
+ var el = document.getElementById('mtg-archive-list');
+ if(!el) return;
+ if(!filtered.length){ el.innerHTML='<div class="es"><div class="ei">&#128269;<\/div><p>'+(q?'No results for "'+q+'"':'Archive empty. Ended meetings will appear here.')+'<\/p><\/div>'; return; }
+ el.innerHTML = filtered.map(function(m){
+  var decs = m.decisions||[];
+  var acts = m.actions||[];
+  return '<div class="cd" style="margin-bottom:12px">'+
+   '<div class="cdh"><div><div style="font-weight:700">'+m.title+'<\/div><div style="font-size:11px;color:var(--t3)">'+m.date+' &bull; <span style="font-family:monospace">'+m.code+'<\/span><\/div><\/div>'+
+   '<button onclick="viewMinutes(\''+m.id+'\')" class="btn bol bsm">&#128196; Minutes<\/button><\/div>'+
+   (decs.length?'<div style="padding:8px 14px;border-top:1px solid var(--bd)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:5px">Decisions<\/div>'+decs.map(function(d){ return '<div style="font-size:12px;color:var(--t2);padding:2px 0">&#128204; '+d+'<\/div>'; }).join('')+'<\/div>':'')+
+   (acts.length?'<div style="padding:8px 14px;border-top:1px solid var(--bd)"><div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:5px">Actions<\/div>'+acts.map(function(a){ return '<div style="font-size:12px;color:var(--t2);padding:2px 0">'+(a.done?'&#9989;':'&#9744;')+' '+a.task+' &mdash; <b>'+a.owner+'<\/b><\/div>'; }).join('')+'<\/div>':'')+
+  '<\/div>';
+ }).join('');
+}
+function searchArchive(){ var m=DB.get('meetings')||[]; renderArchive(m); }
+
+// ── SCHEDULE / JOIN ───────────────────────────────────────────────
+function openNewMeeting(){
+ _invitees = [];
+ var users = DB.get('users')||[];
+ var sel   = document.getElementById('mtg-invite-sel');
+ if(sel) sel.innerHTML = '<option value="">— Add participant —<\/option>'+
+  users.filter(function(u){ return u.id!==CU.id && u.st==='Active'; }).map(function(u){
+   return '<option value="'+u.id+'">'+u.fn+' '+u.ln+' ('+u.sn+')<\/option>';
+  }).join('');
+ var di = document.getElementById('mtg-date');
+ if(di) di.value = new Date().toISOString().split('T')[0];
+ var il = document.getElementById('mtg-invite-list');
+ if(il) il.innerHTML = '';
+ openM('mnewmtg');
+}
+
+var _invitees = [];
+function addMtgInvitee(sel){
+ if(!sel||!sel.value) return;
+ if(_invitees.indexOf(sel.value)>=0){ sel.value=''; return; }
+ _invitees.push(sel.value);
+ var users = DB.get('users')||[];
+ var u = users.find(function(x){ return x.id===sel.value; })||{};
+ var il = document.getElementById('mtg-invite-list');
+ if(il) il.innerHTML += '<span style="background:var(--skp);color:var(--sk);padding:3px 10px;border-radius:20px;font-size:12px;display:inline-flex;align-items:center;gap:5px">'+
+  u.fn+' '+u.ln+
+  '<button onclick="removeMtgInvitee(\''+sel.value+'\')" style="background:none;border:none;color:var(--sk);cursor:pointer;font-size:14px;padding:0;line-height:1">&times;<\/button><\/span>';
+ sel.value='';
+}
+function removeMtgInvitee(uid){
+ _invitees = _invitees.filter(function(x){ return x!==uid; });
+ var users = DB.get('users')||[];
+ var il = document.getElementById('mtg-invite-list');
+ if(il) il.innerHTML = _invitees.map(function(id){
+  var u=users.find(function(x){ return x.id===id; })||{};
+  return '<span style="background:var(--skp);color:var(--sk);padding:3px 10px;border-radius:20px;font-size:12px;display:inline-flex;align-items:center;gap:5px">'+
+   u.fn+' '+u.ln+
+   '<button onclick="removeMtgInvitee(\''+id+'\')" style="background:none;border:none;color:var(--sk);cursor:pointer;font-size:14px;padding:0;line-height:1">&times;<\/button><\/span>';
+ }).join('');
+}
+
+function scheduleMeeting(){
+ var title  = ((document.getElementById('mtg-title')||{}).value||'').trim();
+ var date   = ((document.getElementById('mtg-date')||{}).value||'');
+ var start  = ((document.getElementById('mtg-start')||{}).value||'09:00');
+ var dur    = ((document.getElementById('mtg-dur')||{}).value||'60');
+ var type   = ((document.getElementById('mtg-type')||{}).value||'team');
+ var agenda = ((document.getElementById('mtg-agenda')||{}).value||'').trim();
+ var rec    = ((document.getElementById('mtg-recording')||{}).value||'none');
+ if(!title){ toast('Meeting title is required','er'); return; }
+ if(!date) { toast('Please select a date','er'); return; }
+ if(!agenda){ toast('Agenda is required before scheduling','wa'); return; }
+ var code = genMtgCode();
+ var mtg  = {
+  id:'mtg'+Date.now(), title:title, code:code, type:type,
+  date:date, startTime:start, duration:dur, agenda:agenda,
+  hostId:CU.id, invitees:_invitees.slice(),
+  status:'scheduled', recording:rec,
+  createdBy:CU.fn+' '+CU.ln, createdAt:new Date().toISOString(),
+  decisions:[], actions:[], chat:[], attendance:[]
+ };
+ var meetings = DB.get('meetings')||[];
+ meetings.push(mtg);
+ DB.set('meetings', meetings);
+ _invitees.forEach(function(uid){
+  sendSystemNotification('You\'ve been invited to "'+title+'" on '+date+' at '+start+'. Code: '+code, CU.sn);
+ });
+ closeM('mnewmtg');
+ toast('Meeting scheduled. Code: '+code, 'ok');
+ alog('MEETINGS','Schedule','Scheduled: '+title+' ('+code+')');
+ loadMeetings();
+}
+
+function openJoinMeeting(){
+ var ni = document.getElementById('join-name');
+ if(ni) ni.value = CU.fn+' '+CU.ln;
+ var ci = document.getElementById('join-code');
+ if(ci) ci.value = '';
+ openM('mjoinmtg');
+}
+function joinByCode(){
+ var code = ((document.getElementById('join-code')||{}).value||'').trim().toUpperCase();
+ if(!code){ toast('Enter a meeting code','er'); return; }
+ var m = (DB.get('meetings')||[]).find(function(x){ return x.code===code; });
+ if(!m){ toast('Meeting code not found','er'); return; }
+ if(m.status==='ended')  { toast('This meeting has ended','wa'); return; }
+ if(m.status==='cancelled'){ toast('This meeting was cancelled','wa'); return; }
+ closeM('mjoinmtg');
+ joinConference(m.id);
+}
+
+function cancelMeeting(id){
+ if(!confirm('Cancel this meeting? Participants will be notified.')) return;
+ var meetings = DB.get('meetings')||[];
+ var idx = meetings.findIndex(function(m){ return m.id===id; });
+ if(idx<0) return;
+ if(meetings[idx].hostId !== CU.id && CU.role !== 'admin'){ toast('Only the host can cancel','er'); return; }
+ meetings[idx].status = 'cancelled';
+ DB.set('meetings', meetings);
+ toast('Meeting cancelled','wa');
+ alog('MEETINGS','Cancel','Cancelled: '+meetings[idx].title);
+ loadMeetings();
+}
+
+function showMtgLink(code, id){
+ var link = getMeetingLink(code);
+ var meetings = DB.get('meetings')||[];
+ var m = meetings.find(function(x){ return x.id===id; })||{};
+ var msg = 'Meeting Link\n\n'+m.title+'\nDate: '+(m.date||'')+'  '+m.startTime+'\nCode: '+code+'\n\nLink: '+link;
+ if(navigator.clipboard && navigator.clipboard.writeText){
+  navigator.clipboard.writeText(link).then(function(){
+   toast('Meeting link copied to clipboard!','ok');
+  });
+ } else {
+  prompt('Copy this meeting link:', link);
+ }
+}
+function copyMtgLink(link){
+ if(navigator.clipboard && navigator.clipboard.writeText){
+  navigator.clipboard.writeText(link).then(function(){ toast('Link copied!','ok'); });
+ } else {
+  prompt('Copy this link:', link);
+ }
+}
+function shareMeetingLink(){
+ if(!_activeMtgId) return;
+ var m = (DB.get('meetings')||[]).find(function(x){ return x.id===_activeMtgId; });
+ if(m) showMtgLink(m.code, m.id);
 }
 
 function saveRoomSettings(){
  var room = DB.get('my_room_'+CU.id)||{};
- room.name = (document.getElementById('room-name')||{}).value||CU.fn+'\'s Room';
- room.access = (document.getElementById('room-access')||{}).value||'org';
- room.agenda = (document.getElementById('room-agenda')||{}).value||'';
+ room.name   = ((document.getElementById('room-name')||{}).value||CU.fn+'\'s Room');
+ room.access = ((document.getElementById('room-access')||{}).value||'org');
+ room.agenda = ((document.getElementById('room-agenda')||{}).value||'');
  if(!room.code) room.code = 'COH-ROOM-'+CU.sn;
  DB.set('my_room_'+CU.id, room);
  toast('Room settings saved','ok');
@@ -4744,573 +4927,527 @@ function saveRoomSettings(){
 }
 
 function startPersonalRoom(){
- var room = DB.get('my_room_'+CU.id)||{name:CU.fn+'\'s Room',agenda:'',code:'COH-ROOM-'+CU.sn};
+ var room = DB.get('my_room_'+CU.id)||{code:'COH-ROOM-'+CU.sn, agenda:'Open agenda', name:CU.fn+'\'s Room'};
  if(!room.code) room.code='COH-ROOM-'+CU.sn;
- // Create an instant meeting record
- var mtgId = 'mtg'+Date.now();
  var meetings = DB.get('meetings')||[];
- meetings.push({
-  id:mtgId,title:room.name,code:room.code,type:'team',
-  date:new Date().toISOString().split('T')[0],startTime:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
-  duration:'0',agenda:room.agenda||'Open agenda',hostId:CU.id,
-  invitees:[],status:'live',startedAt:new Date().toISOString(),recording:'none',
-  decisions:[],actions:[],chat:[],attendance:[CU.id]
- });
- DB.set('meetings',meetings);
- joinConference(mtgId);
-}
-
-function renderArchive(meetings){
- var q = ((document.getElementById('archive-search')||{}).value||'').toLowerCase();
- var ended = meetings.filter(function(m){
-  return m.status==='ended';
- }).sort(function(a,b){return b.date.localeCompare(a.date);});
- var filtered = q ? ended.filter(function(m){
-  return ((m.title||'')+(m.agenda||'')+(m.notes||'')+JSON.stringify(m.decisions||[])+JSON.stringify(m.actions||[])).toLowerCase().includes(q);
- }) : ended;
- var el = document.getElementById('mtg-archive-list');
- if(!el)return;
- if(!filtered.length){el.innerHTML='<div class="es"><div class="ei">&#128269;<\/div><p>'+(q?'No results for "'+q+'"':'Archive is empty. Completed meetings will appear here.')+'<\/p><\/div>';return;}
- el.innerHTML = filtered.map(function(m){
-  var decisions = m.decisions||[];
-  var actions = m.actions||[];
-  return '<div class="cd" style="margin-bottom:14px"><div class="cdh">'+
-   '<div><div style="font-weight:700;font-size:14px">'+m.title+'<\/div>'+
-   '<div style="font-size:12px;color:var(--t3)">'+m.date+' &bull; '+m.startTime+' &bull; <span style="font-family:monospace">'+m.code+'<\/span><\/div><\/div>'+
-   '<button onclick="viewMinutes(\''+m.id+'\')" class="btn bol bsm">&#128196; Minutes<\/button>'+
-   '<\/div>'+
-   (decisions.length?'<div style="padding:8px 14px;border-top:1px solid var(--bd)"><div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Decisions<\/div>'+decisions.map(function(d){return '<div style="font-size:13px;color:var(--t2);padding:3px 0">&#128204; '+d+'<\/div>';}).join('')+'<\/div>':'')+
-   (actions.length?'<div style="padding:8px 14px;border-top:1px solid var(--bd)"><div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Action Items<\/div>'+actions.map(function(a){return '<div style="font-size:13px;color:var(--t2);padding:3px 0">'+(a.done?'&#9989;':'&#9744;')+' '+a.task+' &mdash; <b>'+a.owner+'<\/b>'+(a.due?' (due '+a.due+')':'')+'<\/div>';}).join('')+'<\/div>':'')+
-  '<\/div>';
- }).join('');
-}
-function searchArchive(){ loadMeetings(); }
-
-// ── SCHEDULE MEETING ───────────────────────────────────────────────
-function openNewMeeting(){
- _invitees=[];
- // Populate invite selector
- var users = DB.get('users')||[];
- var sel = document.getElementById('mtg-invite-sel');
- if(sel){
-  sel.innerHTML='<option value="">— Select staff to invite —<\/option>'+
-   users.filter(function(u){return u.id!==CU.id&&u.st==='Active';}).map(function(u){
-    return '<option value="'+u.id+'">'+u.fn+' '+u.ln+' ('+u.sn+')<\/option>';
-   }).join('');
- }
- var di = document.getElementById('mtg-date');
- if(di) di.value = new Date().toISOString().split('T')[0];
- var listEl = document.getElementById('mtg-invite-list');
- if(listEl) listEl.innerHTML='';
- openM('mnewmtg');
-}
-function addMtgInvitee(sel){
- if(!sel.value)return;
- if(_invitees.includes(sel.value)){sel.value='';return;}
- _invitees.push(sel.value);
- var users = DB.get('users')||[];
- var u = users.find(function(x){return x.id===sel.value;})||{};
- var listEl = document.getElementById('mtg-invite-list');
- if(listEl) listEl.innerHTML += '<span style="background:var(--skp);color:var(--sk);padding:4px 10px;border-radius:20px;font-size:12px;display:inline-flex;align-items:center;gap:6px">'+
-  u.fn+' '+u.ln+
-  '<button onclick="removeMtgInvitee(\''+sel.value+'\')" style="background:none;border:none;color:var(--sk);cursor:pointer;font-size:14px;line-height:1;padding:0">&times;<\/button>'+
-  '<\/span>';
- sel.value='';
-}
-function removeMtgInvitee(uid){
- _invitees = _invitees.filter(function(id){return id!==uid;});
- var users = DB.get('users')||[];
- var listEl = document.getElementById('mtg-invite-list');
- if(listEl) listEl.innerHTML = _invitees.map(function(id){
-  var u=users.find(function(x){return x.id===id;})||{};
-  return '<span style="background:var(--skp);color:var(--sk);padding:4px 10px;border-radius:20px;font-size:12px;display:inline-flex;align-items:center;gap:6px">'+
-   u.fn+' '+u.ln+
-   '<button onclick="removeMtgInvitee(\''+id+'\')" style="background:none;border:none;color:var(--sk);cursor:pointer;font-size:14px;line-height:1;padding:0">&times;<\/button>'+
-   '<\/span>';
- }).join('');
-}
-
-function scheduleMeeting(){
- var title = (document.getElementById('mtg-title')||{}).value||'';
- var date  = (document.getElementById('mtg-date')||{}).value||'';
- var start = (document.getElementById('mtg-start')||{}).value||'09:00';
- var dur   = (document.getElementById('mtg-dur')||{}).value||'60';
- var type  = (document.getElementById('mtg-type')||{}).value||'team';
- var agenda= (document.getElementById('mtg-agenda')||{}).value||'';
- var recur = (document.getElementById('mtg-recur')||{}).value||'none';
- var rec   = (document.getElementById('mtg-recording')||{}).value||'none';
- if(!title){toast('Please enter a meeting title','er');return;}
- if(!date){toast('Please select a date','er');return;}
- if(!agenda.trim()){toast('Agenda is required before a meeting can be scheduled','wa');return;}
- var meetings = DB.get('meetings')||[];
- var mtgId = 'mtg'+Date.now();
- var newMtg = {
-  id:mtgId,title:title,code:genMtgCode(),type:type,date:date,startTime:start,
-  duration:dur,agenda:agenda,hostId:CU.id,invitees:_invitees.slice(),
-  status:'scheduled',recording:rec,recurrence:recur,
-  createdBy:CU.fn+' '+CU.ln,createdAt:new Date().toISOString(),
-  decisions:[],actions:[],chat:[],attendance:[]
- };
- meetings.push(newMtg);
- DB.set('meetings',meetings);
- // Send notifications to invitees
- _invitees.forEach(function(uid){
-  sendSystemNotification(
-   'You have been invited to "'+title+'" on '+date+' at '+start+'. Meeting code: '+newMtg.code,
-   CU.sn
-  );
- });
- closeM('mnewmtg');
- toast('Meeting "'+title+'" scheduled for '+date+' at '+start,'ok');
- alog('MEETINGS','Schedule','Scheduled: '+title+' ('+newMtg.code+')');
- loadMeetings();
-}
-
-function openJoinMeeting(){
- var nameEl = document.getElementById('join-name');
- if(nameEl) nameEl.value = CU.fn+' '+CU.ln;
- openM('mjoinmtg');
-}
-function joinByCode(){
- var code = ((document.getElementById('join-code')||{}).value||'').trim().toUpperCase();
- if(!code){toast('Enter a meeting code','er');return;}
- var meetings = DB.get('meetings')||[];
- var m = meetings.find(function(x){return x.code===code;});
- if(!m){toast('Meeting code not found. Check the code and try again.','er');return;}
- if(m.status==='ended'){toast('This meeting has already ended','wa');return;}
- if(m.status==='cancelled'){toast('This meeting was cancelled','wa');return;}
- closeM('mjoinmtg');
- joinConference(m.id);
-}
-
-function cancelMeeting(id){
- if(!confirm('Cancel this meeting? Participants will be notified.'))return;
- var meetings = DB.get('meetings')||[];
- var idx = meetings.findIndex(function(m){return m.id===id;});
- if(idx<0)return;
- meetings[idx].status='cancelled';
- DB.set('meetings',meetings);
- toast('Meeting cancelled','wa');
- alog('MEETINGS','Cancel','Cancelled: '+meetings[idx].title);
- loadMeetings();
-}
-
-// ── CONFERENCE ROOM ────────────────────────────────────────────────
-function startMeeting(id){
- var meetings = DB.get('meetings')||[];
- var idx = meetings.findIndex(function(m){return m.id===id;});
- if(idx<0)return;
- var m = meetings[idx];
- // Agenda check
- if(!m.agenda||!m.agenda.trim()){
-  toast('Cannot start — agenda is required. Edit the meeting and add an agenda first.','er');return;
- }
- meetings[idx].status='live';
- meetings[idx].startedAt=new Date().toISOString();
- if(!meetings[idx].attendance) meetings[idx].attendance=[];
- if(!meetings[idx].attendance.includes(CU.id)) meetings[idx].attendance.push(CU.id);
- DB.set('meetings',meetings);
- alog('MEETINGS','Start','Started: '+m.title+' ('+m.code+')');
+ // Check if room already live
+ var existing = meetings.find(function(m){ return m.code===room.code && m.status==='live'; });
+ if(existing){ joinConference(existing.id); return; }
+ var id = 'mtg'+Date.now();
+ meetings.push({ id:id, title:room.name||CU.fn+'\'s Room', code:room.code,
+  type:'team', date:new Date().toISOString().split('T')[0],
+  startTime:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),
+  duration:'0', agenda:room.agenda||'Open agenda', hostId:CU.id, invitees:[],
+  status:'live', startedAt:new Date().toISOString(),
+  decisions:[], actions:[], chat:[], attendance:[CU.id] });
+ DB.set('meetings', meetings);
  joinConference(id);
 }
 
-function joinConference(id){
- // Init drag once
- if(!window._pipDragInit){ window._pipDragInit=true; _initPipDrag(); }
+// ── START MEETING ─────────────────────────────────────────────────
+function startMeeting(id){
  var meetings = DB.get('meetings')||[];
- var m = meetings.find(function(x){return x.id===id;});
- if(!m){toast('Meeting not found','er');return;}
- _activeMtgId = id;
- _confDecisions = m.decisions?m.decisions.slice():[];
- _confActions = m.actions?m.actions.slice():[];
- _confChat = m.chat?m.chat.slice():[];
- _confAttendees = m.attendance?m.attendance.slice():[];
- if(!_confAttendees.includes(CU.id)) _confAttendees.push(CU.id);
- _currentAgendaIdx = 0;
- _micOn=true;_camOn=true;_recording=(m.recording==='auto');
- _lowBW=false;_whiteboardActive=false;_screenSharing=false;
+ var idx = meetings.findIndex(function(m){ return m.id===id; });
+ if(idx<0) return;
+ if(!meetings[idx].agenda){ toast('Add an agenda before starting','er'); return; }
+ meetings[idx].status    = 'live';
+ meetings[idx].startedAt = new Date().toISOString();
+ if(!meetings[idx].attendance) meetings[idx].attendance = [];
+ if(meetings[idx].attendance.indexOf(CU.id)<0) meetings[idx].attendance.push(CU.id);
+ DB.set('meetings', meetings);
+ alog('MEETINGS','Start','Started: '+meetings[idx].title);
+ joinConference(id);
+}
 
- // Show conference room
+// ── JOIN CONFERENCE ────────────────────────────────────────────────
+function joinConference(id){
+ var meetings = DB.get('meetings')||[];
+ var m = meetings.find(function(x){ return x.id===id; });
+ if(!m){ toast('Meeting not found','er'); return; }
+
+ _activeMtgId   = id;
+ _confDecisions = (m.decisions||[]).slice();
+ _confActions   = (m.actions||[]).slice();
+ _confChat      = (m.chat||[]).slice();
+ _confAttendees = (m.attendance||[]).slice();
+ if(_confAttendees.indexOf(CU.id)<0) _confAttendees.push(CU.id);
+ _agendaIdx = 0;
+ _micOn=true; _camOn=true; _handRaised=false;
+ _recording=(m.recording==='auto');
+ _lowBW=false; _wbActive=false; _ssActive=false;
+
  var room = document.getElementById('conf-room');
- if(room) room.style.display='flex';
+ if(room) room.style.display = 'flex';
 
- setText('conf-title', m.title);
- setText('conf-info', '&#128279; '+m.code+' &bull; Started '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
+ var ct = document.getElementById('conf-title');
+ if(ct) ct.textContent = m.title;
+ var ci = document.getElementById('conf-info');
+ if(ci) ci.innerHTML = '&#128279; '+m.code+' &bull; Started '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+ var rb = document.getElementById('conf-rec-badge');
+ if(rb) rb.style.display = _recording ? 'inline' : 'none';
 
- // Recording badge
- var recBadge = document.getElementById('conf-rec-badge');
- if(recBadge) recBadge.style.display = _recording?'inline':'none';
-
- // Start timer
+ // Timer
  _mtgStartTime = Date.now();
- _mtgTimerInterval = setInterval(updateMtgTimer,1000);
- _startPipSync();
+ if(_timerIv) clearInterval(_timerIv);
+ _timerIv = setInterval(function(){
+  if(!_mtgStartTime) return;
+  var e=Math.floor((Date.now()-_mtgStartTime)/1000);
+  var h=Math.floor(e/3600), mm=Math.floor((e%3600)/60), s=e%60;
+  var el=document.getElementById('conf-timer');
+  if(el) el.textContent=pad(h)+':'+pad(mm)+':'+pad(s);
+  var pe=document.getElementById('pip-timer');
+  if(pe && document.getElementById('mtg-pip') && document.getElementById('mtg-pip').style.display!=='none')
+   pe.textContent=pad(h)+':'+pad(mm)+':'+pad(s);
+ }, 1000);
 
- // Build agenda list
- buildConfAgenda(m.agenda);
+ buildAgendaList(m.agenda);
  renderConfDecisions();
  renderConfActions();
  renderConfChat();
- renderConfPeople(meetings, m);
+ renderPeople(m, meetings);
  renderVideoGrid();
 
- // Try to get camera/mic (gracefully fail)
+ // Update btn states
+ _updateMicBtn(); _updateCamBtn();
+
+ // Request media
  if(!_lowBW && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-  navigator.mediaDevices.getUserMedia({video:true,audio:true})
+  navigator.mediaDevices.getUserMedia({video:true, audio:true})
    .then(function(stream){
-    _localStream=stream;
+    _localStream = stream;
     renderVideoGrid();
    })
    .catch(function(err){
-    _camOn=false;renderVideoGrid();
-    toast('Camera not available — audio-only mode','wa');
+    _camOn = false; _updateCamBtn();
+    if(err.name!=='NotFoundError'){
+     navigator.mediaDevices.getUserMedia({audio:true})
+      .then(function(s){ _localStream=s; })
+      .catch(function(){});
+    }
+    toast('Camera not available — audio only mode','wa');
+    renderVideoGrid();
    });
  } else {
-  _camOn=false;renderVideoGrid();
+  _camOn = false; _updateCamBtn(); renderVideoGrid();
  }
 
- // Whiteboard init
+ // Init whiteboard
  setTimeout(function(){
   var canvas = document.getElementById('wb-canvas');
-  if(canvas){
+  if(canvas && !canvas._wbInit){
+   canvas._wbInit = true;
    _wbCtx = canvas.getContext('2d');
-   canvas.addEventListener('mousedown', wbStart);
-   canvas.addEventListener('mousemove', wbDraw);
-   canvas.addEventListener('mouseup', wbEnd);
-   canvas.addEventListener('touchstart', function(e){e.preventDefault();wbStart({offsetX:e.touches[0].clientX-canvas.getBoundingClientRect().left,offsetY:e.touches[0].clientY-canvas.getBoundingClientRect().top});});
-   canvas.addEventListener('touchmove', function(e){e.preventDefault();wbDraw({offsetX:e.touches[0].clientX-canvas.getBoundingClientRect().left,offsetY:e.touches[0].clientY-canvas.getBoundingClientRect().top});});
-   canvas.addEventListener('touchend', wbEnd);
+   _wbCtx.lineJoin = 'round';
+   _wbCtx.lineCap  = 'round';
+   canvas.addEventListener('mousedown', _wbDown);
+   canvas.addEventListener('mousemove', _wbMove);
+   canvas.addEventListener('mouseup',   _wbUp);
+   canvas.addEventListener('mouseleave',_wbUp);
+   canvas.addEventListener('touchstart',function(e){e.preventDefault();var t=e.touches[0],r=canvas.getBoundingClientRect();_wbDown({offsetX:t.clientX-r.left,offsetY:t.clientY-r.top});},{passive:false});
+   canvas.addEventListener('touchmove', function(e){e.preventDefault();var t=e.touches[0],r=canvas.getBoundingClientRect();_wbMove({offsetX:t.clientX-r.left,offsetY:t.clientY-r.top});},{passive:false});
+   canvas.addEventListener('touchend',  _wbUp);
   }
- },300);
-}
+ }, 400);
 
-function updateMtgTimer(){
- if(!_mtgStartTime)return;
- var elapsed = Math.floor((Date.now()-_mtgStartTime)/1000);
- var h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60),s=elapsed%60;
- var el = document.getElementById('conf-timer');
- if(el) el.textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
+ // Init drag for PiP
+ if(!window._pipDragInit){ window._pipDragInit=true; _initPipDrag(); }
 
-function buildConfAgenda(agendaText){
- var items = (agendaText||'').split('\n').filter(function(l){return l.trim();});
- var el = document.getElementById('conf-agenda-list');
- if(!el)return;
- el.innerHTML = '<div style="color:#8B949E;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px">Agenda<\/div>'+
-  items.map(function(item,i){
-   return '<div class="agenda-item'+(i===_currentAgendaIdx?' current':'')+(i<_currentAgendaIdx?' done':'')+'" onclick="setAgendaItem('+i+')">'+
-    '<span style="background:#30363D;color:#8B949E;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">'+(i+1)+'<\/span>'+
-    '<span>'+item.replace(/^\d+\.\s*/,'')+'<\/span>'+
-   '<\/div>';
-  }).join('')+
-  (items.length?'<div style="display:flex;gap:6px;margin-top:8px">'+
-   '<button onclick="prevAgendaItem()" style="flex:1;background:#21262D;border:1px solid #30363D;color:#8B949E;border-radius:6px;padding:6px;font-size:12px;cursor:pointer">&#8592; Prev<\/button>'+
-   '<button onclick="nextAgendaItem('+items.length+')" style="flex:1;background:#1F6FEB;border:none;color:#fff;border-radius:6px;padding:6px;font-size:12px;font-weight:600;cursor:pointer">Next &#8594;<\/button>'+
-  '<\/div>':'');
+ // Save attendance
+ saveMtgState();
 }
-function setAgendaItem(idx){ _currentAgendaIdx=idx; var meetings=DB.get('meetings')||[]; var m=meetings.find(function(x){return x.id===_activeMtgId;})||{}; buildConfAgenda(m.agenda); }
-function nextAgendaItem(total){ if(_currentAgendaIdx<total-1){_currentAgendaIdx++;setAgendaItem(_currentAgendaIdx);}else{toast('All agenda items covered!','ok');} }
-function prevAgendaItem(){ if(_currentAgendaIdx>0){_currentAgendaIdx--;setAgendaItem(_currentAgendaIdx);} }
+function pad(n){ return String(n).padStart(2,'0'); }
 
+// ── VIDEO GRID ─────────────────────────────────────────────────────
 function renderVideoGrid(){
  var grid = document.getElementById('video-grid');
- if(!grid)return;
+ if(!grid) return;
  var users = DB.get('users')||[];
- var participants = _confAttendees.map(function(uid){return users.find(function(u){return u.id===uid;})||{id:uid,fn:'Guest',ln:'',av:'G'};});
- var count = participants.length;
- var cols = count<=1?1:count<=4?2:count<=9?3:4;
- grid.style.gridTemplateColumns='repeat('+cols+',1fr)';
-
- grid.innerHTML = participants.map(function(u,i){
-  var isMe = u.id===CU.id;
-  var hasCam = isMe&&_camOn&&_localStream;
-  return '<div class="video-tile" style="'+(count===1?'min-height:60vh':'min-height:140px')+'">'+
+ var participants = _confAttendees.map(function(uid){
+  return users.find(function(u){ return u.id===uid; }) || {id:uid,fn:'Guest',ln:'',av:'G',sn:'?'};
+ });
+ var count = Math.max(participants.length, 1);
+ var cols  = count===1?1:count<=4?2:count<=9?3:4;
+ grid.style.gridTemplateColumns = 'repeat('+cols+',1fr)';
+ grid.innerHTML = participants.map(function(u){
+  var isMe  = u.id === CU.id;
+  var hasCam= isMe && _camOn && _localStream && _localStream.getVideoTracks().length;
+  return '<div style="background:#161B22;border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;min-height:'+(count===1?'60vh':'140px')+'">'+
    (hasCam
-    ? '<video id="local-video" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"><\/video>'
-    : '<div class="tile-avatar">'+u.av+'<\/div>')+
-   '<div class="tile-label">'+(isMe?(u.fn+' (You)'):u.fn)+' '+u.ln+(isMe&&!_micOn?' &#128263;':'')+'<\/div>'+
-   (isMe&&!_micOn?'<div class="tile-muted">&#128263;<\/div>':'')+
+    ? '<video id="local-vid" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover"><\/video>'
+    : '<div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1F6FEB,#0D2137);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff">'+u.av+'<\/div>')+
+   '<div style="position:absolute;bottom:6px;left:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px">'+
+    (isMe?u.fn+' (You)':u.fn+' '+u.ln)+(isMe&&!_micOn?' &#128263;':'')+'<\/div>'+
+   (isMe&&!_micOn?'<div style="position:absolute;top:6px;right:6px;background:#da3633;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px">&#128263;<\/div>':'')+
   '<\/div>';
  }).join('');
-
- // Attach local video stream
- if(_localStream&&_camOn){
-  var vid = document.getElementById('local-video');
-  if(vid) vid.srcObject = _localStream;
- }
-
- // Update count
- var countEl = document.getElementById('conf-attendee-count');
- if(countEl) countEl.textContent = count+' participant'+(count!==1?'s':'');
+ // Attach stream to local video
+ setTimeout(function(){
+  var vid = document.getElementById('local-vid');
+  if(vid && _localStream) vid.srcObject = _localStream;
+ }, 100);
+ var ac = document.getElementById('conf-attendee-count');
+ if(ac) ac.textContent = count+' participant'+(count!==1?'s':'');
 }
 
+// ── AGENDA ─────────────────────────────────────────────────────────
+function buildAgendaList(agendaText){
+ var items = (agendaText||'').split('\n').map(function(l){ return l.trim(); }).filter(Boolean);
+ var el    = document.getElementById('conf-agenda-list');
+ if(!el) return;
+ if(!items.length){ el.innerHTML='<div style="color:#6E7681;font-size:12px">No agenda set.<\/div>'; return; }
+ el.innerHTML = '<div style="color:#8B949E;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Agenda ('+items.length+' items)<\/div>'+
+  items.map(function(item,i){
+   return '<div onclick="setAgendaItem('+i+','+items.length+')" style="padding:7px 10px;border-radius:7px;margin-bottom:4px;cursor:pointer;font-size:12px;color:#E6EDF3;background:'+(i===_agendaIdx?'#1F3A5F':i<_agendaIdx?'rgba(35,134,54,.15)':'#21262D')+';border-left:'+(i===_agendaIdx?'3px solid #1F6FEB':i<_agendaIdx?'3px solid #238636':'3px solid transparent')+'">'+
+    '<span style="background:#30363D;color:#8B949E;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;margin-right:6px">'+(i+1)+'<\/span>'+
+    (i<_agendaIdx?'<s>':'')+(item.replace(/^\d+\.\s*/,''))+(i<_agendaIdx?'<\/s>':'')+
+   '<\/div>';
+  }).join('')+
+  '<div style="display:flex;gap:5px;margin-top:8px">'+
+   '<button onclick="prevAgenda()" style="flex:1;background:#21262D;border:1px solid #30363D;color:#8B949E;border-radius:6px;padding:5px;font-size:11px;cursor:pointer">&#8592; Prev<\/button>'+
+   '<button onclick="nextAgenda('+items.length+')" style="flex:1;background:#1F6FEB;border:none;color:#fff;border-radius:6px;padding:5px;font-size:11px;font-weight:600;cursor:pointer">Next &#8594;<\/button>'+
+  '<\/div>';
+}
+function setAgendaItem(i, total){ _agendaIdx=i; var m=(DB.get('meetings')||[]).find(function(x){return x.id===_activeMtgId;})||{}; buildAgendaList(m.agenda); }
+function nextAgenda(total){ if(_agendaIdx<total-1){_agendaIdx++;} else {toast('All agenda items covered!','ok');} var m=(DB.get('meetings')||[]).find(function(x){return x.id===_activeMtgId;})||{}; buildAgendaList(m.agenda); }
+function prevAgenda(){ if(_agendaIdx>0) _agendaIdx--; var m=(DB.get('meetings')||[]).find(function(x){return x.id===_activeMtgId;})||{}; buildAgendaList(m.agenda); }
+
+// ── DECISIONS ─────────────────────────────────────────────────────
 function renderConfDecisions(){
- var el = document.getElementById('conf-decisions-list');
- if(!el)return;
- el.innerHTML = _confDecisions.length
-  ? _confDecisions.map(function(d,i){return '<div style="padding:5px 0;border-bottom:1px solid #30363D;display:flex;align-items:flex-start;gap:6px"><span style="color:#da3633">&#128204;<\/span><span style="flex:1">'+d+'<\/span><button onclick="removeDecision('+i+')" style="background:none;border:none;color:#6E7681;cursor:pointer;font-size:12px">&times;<\/button><\/div>';}).join('')
-  : '<div style="color:#6E7681;font-size:12px">No decisions recorded yet.<\/div>';
+ var el=document.getElementById('conf-decisions-list'); if(!el) return;
+ el.innerHTML=_confDecisions.length
+  ? _confDecisions.map(function(d,i){ return '<div style="padding:4px 0;border-bottom:1px solid #30363D;display:flex;align-items:flex-start;gap:5px;font-size:12px"><span style="color:#da3633">&#128204;<\/span><span style="flex:1;color:#E6EDF3">'+d+'<\/span><button onclick="removeDecision('+i+')" style="background:none;border:none;color:#6E7681;cursor:pointer;font-size:11px;flex-shrink:0">&times;<\/button><\/div>'; }).join('')
+  : '<div style="color:#6E7681;font-size:12px">No decisions yet.<\/div>';
 }
-function addDecision(){
- var inp = document.getElementById('conf-decision-input');
- var val = (inp&&inp.value||'').trim();
- if(!val)return;
- _confDecisions.push(val);
- inp.value='';
- renderConfDecisions();
- saveMtgState();
- toast('Decision recorded','ok');
-}
+function addDecision(){ var inp=document.getElementById('conf-decision-input'); var v=(inp&&inp.value||'').trim(); if(!v) return; _confDecisions.push(v); inp.value=''; renderConfDecisions(); saveMtgState(); toast('Decision recorded','ok'); }
 function removeDecision(i){ _confDecisions.splice(i,1); renderConfDecisions(); saveMtgState(); }
 
+// ── ACTIONS ───────────────────────────────────────────────────────
 function renderConfActions(){
- var el = document.getElementById('conf-actions-list');
- if(!el)return;
- var users = DB.get('users')||[];
- // Populate owner select
- var ownerSel = document.getElementById('ai-owner');
- if(ownerSel&&ownerSel.options.length<=1){
-  ownerSel.innerHTML = _confAttendees.map(function(uid){var u=users.find(function(x){return x.id===uid;})||{};return '<option value="'+u.fn+' '+u.ln+'">'+u.fn+' '+u.ln+'<\/option>';}).join('');
- }
- el.innerHTML = _confActions.length
-  ? _confActions.map(function(a,i){return '<div class="action-item'+(a.done?' done':'')+'" >'+
-    '<input type="checkbox"'+(a.done?' checked':'')+' onclick="toggleAction('+i+')" style="margin-top:2px;flex-shrink:0">'+
-    '<div style="flex:1"><div class="ai-task">'+a.task+'<\/div><div style="font-size:10px;color:#6E7681;margin-top:2px">'+a.owner+(a.due?' &bull; due '+a.due:'')+'<\/div><\/div>'+
-    '<button onclick="removeAction('+i+')" style="background:none;border:none;color:#6E7681;cursor:pointer;font-size:12px;flex-shrink:0">&times;<\/button>'+
-   '<\/div>';}).join('')
+ var el=document.getElementById('conf-actions-list'); if(!el) return;
+ var users=DB.get('users')||[];
+ var os=document.getElementById('ai-owner');
+ if(os&&os.options.length<=1) os.innerHTML=_confAttendees.map(function(uid){ var u=users.find(function(x){return x.id===uid;})||{}; return '<option value="'+(u.fn||'')+(u.ln?' '+u.ln:'')+'">'+(u.fn||'Guest')+' '+(u.ln||'')+'<\/option>'; }).join('');
+ el.innerHTML=_confActions.length
+  ? _confActions.map(function(a,i){ return '<div style="display:flex;gap:6px;padding:6px;border-radius:6px;background:#21262D;margin-bottom:4px;font-size:11px;color:#E6EDF3;align-items:flex-start"><input type="checkbox"'+(a.done?' checked':'')+' onclick="toggleAction('+i+')" style="margin-top:2px;flex-shrink:0"><div style="flex:1"><div style="'+(a.done?'text-decoration:line-through;opacity:.5':'')+'">'+(a.task||'')+'<\/div><div style="color:#6E7681;font-size:10px">'+(a.owner||'')+' '+(a.due?'&bull; due '+a.due:'')+'<\/div><\/div><button onclick="removeAction('+i+')" style="background:none;border:none;color:#6E7681;cursor:pointer;font-size:11px;flex-shrink:0">&times;<\/button><\/div>'; }).join('')
   : '<div style="color:#6E7681;font-size:12px">No action items yet.<\/div>';
 }
-function addActionItem(){
- var task=(document.getElementById('ai-task')||{}).value||'';
- var owner=(document.getElementById('ai-owner')||{}).value||CU.fn+' '+CU.ln;
- var due=(document.getElementById('ai-due')||{}).value||'';
- if(!task.trim()){toast('Enter a task description','er');return;}
- _confActions.push({task:task.trim(),owner:owner,due:due,done:false,addedBy:CU.fn,addedAt:new Date().toISOString()});
- var ti=document.getElementById('ai-task');if(ti)ti.value='';
- var di=document.getElementById('ai-due');if(di)di.value='';
- renderConfActions();
- saveMtgState();
- toast('Action item added','ok');
-}
+function addActionItem(){ var t=(document.getElementById('ai-task')||{}).value||''; var o=(document.getElementById('ai-owner')||{}).value||CU.fn+' '+CU.ln; var d=(document.getElementById('ai-due')||{}).value||''; if(!t.trim()){toast('Enter a task','er');return;} _confActions.push({task:t.trim(),owner:o,due:d,done:false,addedBy:CU.fn,at:new Date().toISOString()}); var ti=document.getElementById('ai-task'); if(ti)ti.value=''; renderConfActions(); saveMtgState(); toast('Action added','ok'); }
 function toggleAction(i){ _confActions[i].done=!_confActions[i].done; renderConfActions(); saveMtgState(); }
 function removeAction(i){ _confActions.splice(i,1); renderConfActions(); saveMtgState(); }
 
+// ── CHAT ──────────────────────────────────────────────────────────
 function renderConfChat(){
- var el = document.getElementById('conf-chat-messages');
- if(!el)return;
- el.innerHTML = _confChat.map(function(msg){
-  var isMe = msg.uid===CU.id;
-  return '<div class="chat-msg'+(isMe?' mine':'')+'">'+
-   '<div class="cm-name">'+(isMe?'You':msg.name)+'<\/div>'+
-   '<div class="cm-text">'+msg.text+'<\/div>'+
-  '<\/div>';
- }).join('');
- el.scrollTop = el.scrollHeight;
+ var el=document.getElementById('conf-chat-messages'); if(!el) return;
+ el.innerHTML=_confChat.map(function(msg){ var isMe=msg.uid===CU.id; return '<div style="margin-bottom:7px;padding:6px 8px;border-radius:8px;background:'+(isMe?'#1F3A5F':'#21262D')+'"><div style="font-size:10px;font-weight:700;color:#58A6FF;margin-bottom:2px">'+(isMe?'You':msg.name)+'<\/div><div style="font-size:12px;color:#E6EDF3">'+msg.text+'<\/div><\/div>'; }).join('');
+ el.scrollTop=el.scrollHeight;
 }
-function sendChatMsg(){
- var inp = document.getElementById('conf-chat-input');
- var txt = (inp&&inp.value||'').trim();
- if(!txt)return;
- var msg={uid:CU.id,name:CU.fn+' '+CU.ln,text:txt,time:new Date().toISOString()};
- _confChat.push(msg);
- inp.value='';
- renderConfChat();
- saveMtgState();
-}
+function sendChatMsg(){ var inp=document.getElementById('conf-chat-input'); var txt=(inp&&inp.value||'').trim(); if(!txt) return; _confChat.push({uid:CU.id,name:CU.fn+' '+CU.ln,text:txt,time:new Date().toISOString()}); inp.value=''; renderConfChat(); saveMtgState(); }
 
-function renderConfPeople(meetings,m){
- var el = document.getElementById('conf-people-list');
- if(!el)return;
- var users = DB.get('users')||[];
- var allIds = [m.hostId].concat(m.invitees||[]).filter(function(id,i,arr){return arr.indexOf(id)===i;});
- el.innerHTML = allIds.map(function(uid){
+// ── PEOPLE ────────────────────────────────────────────────────────
+function renderPeople(m, allMeetings){
+ var el=document.getElementById('conf-people-list'); if(!el) return;
+ var users=DB.get('users')||[];
+ var ids=[m.hostId].concat(m.invitees||[]).filter(function(id,i,a){return a.indexOf(id)===i;});
+ el.innerHTML=ids.map(function(uid){
   var u=users.find(function(x){return x.id===uid;})||{};
-  var isHost=uid===m.hostId, isMe=uid===CU.id, isIn=_confAttendees.includes(uid);
-  return '<div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;background:'+(isIn?'#1F3A5F':'#21262D')+';margin-bottom:5px">'+
-   '<div style="width:32px;height:32px;border-radius:50%;background:'+(isIn?'#1F6FEB':'#30363D')+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">'+(u.av||'?')+'<\/div>'+
-   '<div style="flex:1"><div style="color:#E6EDF3;font-size:13px;font-weight:600">'+(u.fn||'Guest')+' '+(u.ln||'')+(isMe?' (You)':'')+'<\/div>'+
-   '<div style="color:#6E7681;font-size:11px">'+(isHost?'Host &bull; ':'')+(isIn?'&#128308; In meeting':'Invited')+'<\/div><\/div>'+
-  '<\/div>';
+  var isHost=uid===m.hostId; var isMe=uid===CU.id; var isIn=_confAttendees.indexOf(uid)>=0;
+  return '<div style="display:flex;align-items:center;gap:8px;padding:7px;border-radius:8px;background:'+(isIn?'#1F3A5F':'#21262D')+';margin-bottom:4px"><div style="width:28px;height:28px;border-radius:50%;background:'+(isIn?'#1F6FEB':'#30363D')+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">'+(u.av||'?')+'<\/div><div style="flex:1"><div style="color:#E6EDF3;font-size:12px;font-weight:600">'+(u.fn||'Guest')+' '+(u.ln||'')+(isMe?' (You)':'')+'<\/div><div style="color:#6E7681;font-size:10px">'+(isHost?'Host &bull; ':'')+( isIn?'&#128308; In meeting':'Invited')+'<\/div><\/div><\/div>';
  }).join('');
 }
 
+// ── SAVE STATE ────────────────────────────────────────────────────
 function saveMtgState(){
- if(!_activeMtgId)return;
+ if(!_activeMtgId) return;
  var meetings=DB.get('meetings')||[];
  var idx=meetings.findIndex(function(m){return m.id===_activeMtgId;});
- if(idx<0)return;
- meetings[idx].decisions=_confDecisions.slice();
- meetings[idx].actions=_confActions.slice();
- meetings[idx].chat=_confChat.slice();
- meetings[idx].attendance=_confAttendees.slice();
- DB.set('meetings',meetings);
+ if(idx<0) return;
+ meetings[idx].decisions  = _confDecisions.slice();
+ meetings[idx].actions    = _confActions.slice();
+ meetings[idx].chat       = _confChat.slice();
+ meetings[idx].attendance = _confAttendees.slice();
+ DB.set('meetings', meetings);
 }
 
-// ── CONTROLS ───────────────────────────────────────────────────────
+// ── CONTROLS ──────────────────────────────────────────────────────
+function _updateMicBtn(){
+ var b=document.getElementById('btn-mic');
+ if(!b) return;
+ b.className=_micOn?'ccb on':'ccb danger';
+ b.innerHTML=_micOn?'&#127908;<br><span style="font-size:9px">Mic<\/span>':'&#128263;<br><span style="font-size:9px">Muted<\/span>';
+}
+function _updateCamBtn(){
+ var b=document.getElementById('btn-cam');
+ if(!b) return;
+ b.className=_camOn?'ccb on':'ccb';
+ b.innerHTML=_camOn?'&#128247;<br><span style="font-size:9px">Cam<\/span>':'&#128247;<br><span style="font-size:9px">Off<\/span>';
+}
+
 function toggleMic(){
  _micOn=!_micOn;
  if(_localStream) _localStream.getAudioTracks().forEach(function(t){t.enabled=_micOn;});
- var btn=document.getElementById('btn-mic');
- if(btn){btn.className='conf-ctrl-btn'+(_micOn?' on':'');btn.innerHTML=_micOn?'&#127908; Mic':'&#128263; Muted';}
+ _updateMicBtn();
+ renderVideoGrid();
  toast(_micOn?'Microphone on':'Microphone muted',_micOn?'ok':'wa');
 }
 function toggleCam(){
  _camOn=!_camOn;
  if(_localStream) _localStream.getVideoTracks().forEach(function(t){t.enabled=_camOn;});
- var btn=document.getElementById('btn-cam');
- if(btn){btn.className='conf-ctrl-btn'+(_camOn?' on':'');btn.innerHTML=_camOn?'&#128247; Cam':'&#128247; Off';}
+ _updateCamBtn();
  renderVideoGrid();
  toast(_camOn?'Camera on':'Camera off',_camOn?'ok':'wa');
 }
 function toggleScreenShare(){
- _screenSharing=!_screenSharing;
- var panel=document.getElementById('screenshare-panel');
- var vgrid=document.getElementById('video-grid');
- var btn=document.getElementById('btn-screen');
- if(_screenSharing){
-  if(panel)panel.style.display='flex';
-  if(vgrid)vgrid.style.display='none';
-  if(btn){btn.className='conf-ctrl-btn danger';btn.innerHTML='&#128190; Stop Share';}
-  // Try real screen share
-  if(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia){
-   navigator.mediaDevices.getDisplayMedia({video:true}).then(function(stream){
-    var iframe=document.createElement('video');
-    iframe.srcObject=stream;iframe.autoplay=true;iframe.style.cssText='width:100%;height:100%;object-fit:contain';
-    if(panel){panel.innerHTML='';panel.appendChild(iframe);}
-    stream.getVideoTracks()[0].onended=function(){_screenSharing=false;if(panel)panel.style.display='none';if(vgrid)vgrid.style.display='grid';if(btn){btn.className='conf-ctrl-btn';btn.innerHTML='&#128190; Share';}};
-   }).catch(function(){});
-  }
-  toast('Screen sharing started','ok');
- } else {
-  if(panel)panel.style.display='none';
-  if(vgrid)vgrid.style.display='grid';
-  if(btn){btn.className='conf-ctrl-btn';btn.innerHTML='&#128190; Share';}
-  toast('Screen sharing stopped','wa');
+ if(_ssActive){
+  _ssActive=false;
+  if(_screenStream){_screenStream.getTracks().forEach(function(t){t.stop();}); _screenStream=null;}
+  var sp=document.getElementById('screenshare-panel');if(sp)sp.style.display='none';
+  var vg=document.getElementById('video-grid');if(vg)vg.style.display='grid';
+  var b=document.getElementById('btn-screen');if(b){b.className='ccb';b.innerHTML='&#128190;<br><span style="font-size:9px">Share<\/span>';}
+  toast('Screen sharing stopped','wa'); return;
  }
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){toast('Screen sharing not supported in this browser','er');return;}
+ navigator.mediaDevices.getDisplayMedia({video:true,audio:true}).then(function(stream){
+  _screenStream=stream; _ssActive=true;
+  var sp=document.getElementById('screenshare-panel');if(sp)sp.style.display='flex';
+  var vg=document.getElementById('video-grid');if(vg)vg.style.display='none';
+  var vid=document.getElementById('screenshare-video');if(vid)vid.srcObject=stream;
+  var b=document.getElementById('btn-screen');if(b){b.className='ccb danger';b.innerHTML='&#128190;<br><span style="font-size:9px">Stop<\/span>';}
+  stream.getVideoTracks()[0].onended=function(){_ssActive=false;_screenStream=null;if(sp)sp.style.display='none';if(vg)vg.style.display='grid';if(b){b.className='ccb';b.innerHTML='&#128190;<br><span style="font-size:9px">Share<\/span>';}};
+  toast('Screen sharing started','ok');
+ }).catch(function(e){toast('Screen share cancelled or not available','wa');});
 }
 function toggleWhiteboard(){
- _whiteboardActive=!_whiteboardActive;
- var panel=document.getElementById('whiteboard-panel');
- var vgrid=document.getElementById('video-grid');
- var btn=document.getElementById('btn-wb');
- if(_whiteboardActive){
-  if(panel)panel.style.display='flex';if(vgrid)vgrid.style.display='none';
-  if(btn){btn.className='conf-ctrl-btn on';btn.innerHTML='&#9998; Close Board';}
-  // Init canvas size
-  var canvas=document.getElementById('wb-canvas');
-  if(canvas&&canvas.parentElement){canvas.width=canvas.parentElement.clientWidth-16;canvas.height=canvas.parentElement.clientHeight-16;}
-  toast('Whiteboard opened — draw with mouse or touch','ok');
+ _wbActive=!_wbActive;
+ var wp=document.getElementById('whiteboard-panel');
+ var vg=document.getElementById('video-grid');
+ var b=document.getElementById('btn-wb');
+ if(_wbActive){
+  if(wp){wp.style.display='flex';}
+  if(vg)vg.style.display='none';
+  if(b){b.className='ccb on';b.innerHTML='&#9998;<br><span style="font-size:9px">Close<\/span>';}
+  // Size canvas
+  setTimeout(function(){
+   var canvas=document.getElementById('wb-canvas');
+   if(canvas&&canvas.parentElement){
+    canvas.width=canvas.parentElement.clientWidth;
+    canvas.height=canvas.parentElement.clientHeight-50;
+    if(_wbCtx){_wbCtx.lineJoin='round';_wbCtx.lineCap='round';}
+   }
+  },100);
+  toast('Whiteboard open — draw freely','ok');
  } else {
-  if(panel)panel.style.display='none';if(vgrid)vgrid.style.display='grid';
-  if(btn){btn.className='conf-ctrl-btn';btn.innerHTML='&#9998; Board';}
+  if(wp)wp.style.display='none';
+  if(vg)vg.style.display='grid';
+  if(b){b.className='ccb';b.innerHTML='&#9998;<br><span style="font-size:9px">Board<\/span>';}
  }
 }
-function wbStart(e){ _wbDrawing=true; if(_wbCtx){_wbCtx.beginPath();_wbCtx.moveTo(e.offsetX,e.offsetY);} }
-function wbDraw(e){ if(!_wbDrawing||!_wbCtx)return; _wbCtx.lineWidth=2;_wbCtx.strokeStyle='#1F6FEB';_wbCtx.lineTo(e.offsetX,e.offsetY);_wbCtx.stroke(); }
-function wbEnd(){ _wbDrawing=false; }
+function wbClear(){ if(_wbCtx&&document.getElementById('wb-canvas')){ _wbCtx.clearRect(0,0,document.getElementById('wb-canvas').width,document.getElementById('wb-canvas').height); } }
+function _wbDown(e){ _wbDrawing=true; if(_wbCtx){_wbCtx.beginPath();_wbCtx.moveTo(e.offsetX,e.offsetY);} }
+function _wbMove(e){
+ if(!_wbDrawing||!_wbCtx) return;
+ var col=document.getElementById('wb-color');
+ var sz=document.getElementById('wb-size');
+ _wbCtx.strokeStyle=col?col.value:'#1F6FEB';
+ _wbCtx.lineWidth=sz?parseInt(sz.value):3;
+ _wbCtx.lineTo(e.offsetX,e.offsetY);
+ _wbCtx.stroke();
+}
+function _wbUp(){ _wbDrawing=false; }
 
 function toggleRecording(){
  _recording=!_recording;
- var badge=document.getElementById('conf-rec-badge');
- var btn=document.getElementById('btn-rec');
- if(badge)badge.style.display=_recording?'inline':'none';
- if(btn){btn.className='conf-ctrl-btn'+(_recording?' danger':'');btn.innerHTML=_recording?'&#9632; Stop Rec':'&#9679; Record';}
- saveMtgState();
+ var rb=document.getElementById('conf-rec-badge');if(rb)rb.style.display=_recording?'inline':'none';
+ var b=document.getElementById('btn-rec');
+ if(b){b.className=_recording?'ccb danger':'ccb';b.innerHTML=_recording?'&#9632;<br><span style="font-size:9px">Stop<\/span>':'&#9679;<br><span style="font-size:9px">Rec<\/span>';}
  toast(_recording?'Recording started':'Recording stopped',_recording?'er':'ok');
+ saveMtgState();
 }
+
 function raiseHand(){
- var btn=document.getElementById('btn-hand');
- if(btn){
-  var raised=btn.classList.contains('on');
-  btn.className='conf-ctrl-btn'+(raised?'':' on');
-  toast(raised?'Hand lowered':'Hand raised &#9995;','ok');
- }
+ _handRaised=!_handRaised;
+ var b=document.getElementById('btn-hand');
+ if(b){b.className=_handRaised?'ccb active':'ccb';b.innerHTML='&#9995;<br><span style="font-size:9px">'+(  _handRaised?'Lower':'Hand')+'<\/span>';}
+ var hb=document.getElementById('hand-banner');
+ if(hb)hb.style.display=_handRaised?'block':'none';
+ toast(_handRaised?'Hand raised &#9995;':'Hand lowered','ok');
 }
+
 function toggleLowBandwidth(){
  _lowBW=!_lowBW;
- var btn=document.getElementById('btn-lowbw');
- if(btn){btn.className='conf-ctrl-btn'+(_lowBW?' on':'');btn.innerHTML=_lowBW?'&#127908; Full Mode':'&#128246; Audio Only';}
- if(_lowBW&&_localStream){_localStream.getVideoTracks().forEach(function(t){t.enabled=false;});_camOn=false;renderVideoGrid();}
- toast(_lowBW?'Low bandwidth mode — video off. Audio only.':'Full video mode restored',_lowBW?'wa':'ok');
+ var b=document.getElementById('btn-lowbw');
+ if(b){b.className=_lowBW?'ccb on':'ccb';b.innerHTML=_lowBW?'&#127908;<br><span style="font-size:9px">Audio<\/span>':'&#128246;<br><span style="font-size:9px">Audio<\/span>';}
+ if(_lowBW){
+  _camOn=false; _updateCamBtn();
+  if(_localStream) _localStream.getVideoTracks().forEach(function(t){t.enabled=false;});
+  renderVideoGrid();
+  toast('Low bandwidth — video off, audio only','wa');
+ } else {
+  if(_localStream){
+   _camOn=true; _updateCamBtn();
+   _localStream.getVideoTracks().forEach(function(t){t.enabled=true;});
+   renderVideoGrid();
+  }
+  toast('Full quality mode restored','ok');
+ }
 }
 
 function switchConfPanel(name){
  ['agenda','chat','actions','people'].forEach(function(p){
   var btn=document.getElementById('cpanel-'+p);
   var body=document.getElementById('cpanel-'+p+'-body');
-  var isActive=p===name;
-  if(btn){btn.style.background=isActive?'#1F6FEB':'transparent';btn.style.color=isActive?'#fff':'#8B949E';}
-  if(body){body.style.display=isActive?'flex':'none';}
+  var on=p===name;
+  if(btn){btn.style.background=on?'#1F6FEB':'transparent';btn.style.color=on?'#fff':'#8B949E';}
+  if(body){body.style.display=on?'flex':'none';}
+ });
+ if(name==='chat'){ setTimeout(function(){var el=document.getElementById('conf-chat-messages');if(el)el.scrollTop=el.scrollHeight;},50); }
+}
+
+function toggleSidePanel(){
+ _sidePanelOpen=!_sidePanelOpen;
+ var sp=document.getElementById('conf-side');
+ if(sp) sp.style.width=_sidePanelOpen?'300px':'0';
+}
+
+// ── MINIMIZE / EXPAND ──────────────────────────────────────────────
+function minimizeMeeting(){
+ var room=document.getElementById('conf-room'); if(room)room.style.display='none';
+ var pip=document.getElementById('mtg-pip'); if(pip)pip.style.display='flex';
+ var pt=document.getElementById('pip-title');
+ var ct=document.getElementById('conf-title');
+ if(pt&&ct) pt.textContent=ct.textContent;
+ var pd=document.getElementById('pip-rec-dot'); if(pd)pd.style.display=_recording?'block':'none';
+ var pb=document.getElementById('pip-mic-btn'); if(pb)pb.innerHTML=_micOn?'&#127908;':'&#128263;';
+ toast('Minimized — use the bar to return','ok');
+}
+function expandMeeting(){
+ var room=document.getElementById('conf-room'); if(room)room.style.display='flex';
+ var pip=document.getElementById('mtg-pip');  if(pip)pip.style.display='none';
+ renderVideoGrid();
+}
+function togglePipMic(){ toggleMic(); var b=document.getElementById('pip-mic-btn'); if(b)b.innerHTML=_micOn?'&#127908;':'&#128263;'; }
+
+// ── END / LEAVE ────────────────────────────────────────────────────
+function endOrLeaveMeeting(){
+ var meetings=DB.get('meetings')||[];
+ var m=meetings.find(function(x){return x.id===_activeMtgId;});
+ var isHost=m&&m.hostId===CU.id;
+ if(isHost){
+  if(!confirm('End meeting for ALL participants?\n\nOK = End for everyone\nCancel = Just leave (meeting continues)')) {
+   _doLeaveMeeting(); return;
+  }
+  _doEndMeeting(true);
+ } else {
+  if(!confirm('Leave this meeting?')) return;
+  _doLeaveMeeting();
+ }
+}
+function _doEndMeeting(notifyAll){
+ var meetings=DB.get('meetings')||[];
+ var idx=meetings.findIndex(function(m){return m.id===_activeMtgId;});
+ if(idx>=0){
+  meetings[idx].status   ='ended';
+  meetings[idx].endedAt  =new Date().toISOString();
+  meetings[idx].decisions=_confDecisions.slice();
+  meetings[idx].actions  =_confActions.slice();
+  meetings[idx].chat     =_confChat.slice();
+  meetings[idx].attendance=_confAttendees.slice();
+  meetings[idx].durationActual=_mtgStartTime?Math.floor((Date.now()-_mtgStartTime)/60000):0;
+  DB.set('meetings',meetings);
+  alog('MEETINGS','End','Ended: '+meetings[idx].title+' ('+meetings[idx].durationActual+'min)');
+  if(notifyAll) _confAttendees.forEach(function(uid){
+   if(uid!==CU.id) sendSystemNotification('Meeting "'+meetings[idx].title+'" ended. '+_confDecisions.length+' decisions, '+_confActions.length+' action items captured.',CU.sn);
+  });
+ }
+ _cleanupMeeting();
+ toast('Meeting ended','wa');
+}
+function _doLeaveMeeting(){
+ saveMtgState();
+ _cleanupMeeting();
+ toast('You left the meeting — it continues for others','ok');
+}
+function _cleanupMeeting(){
+ if(_timerIv){clearInterval(_timerIv);_timerIv=null;}
+ _mtgStartTime=null;
+ if(_localStream){_localStream.getTracks().forEach(function(t){t.stop();});_localStream=null;}
+ if(_screenStream){_screenStream.getTracks().forEach(function(t){t.stop();});_screenStream=null;}
+ _activeMtgId=null;
+ _confDecisions=[];_confActions=[];_confChat=[];_confAttendees=[];
+ _handRaised=false;_recording=false;_lowBW=false;_wbActive=false;_ssActive=false;
+ _micOn=true;_camOn=true;
+ var room=document.getElementById('conf-room'); if(room)room.style.display='none';
+ var pip=document.getElementById('mtg-pip');   if(pip)pip.style.display='none';
+ var hb=document.getElementById('hand-banner'); if(hb)hb.style.display='none';
+ try{ loadMeetings(); } catch(e){ console.warn(e); }
+}
+
+// ── PiP DRAG ──────────────────────────────────────────────────────
+function _initPipDrag(){
+ var dragging=false, ox=0, oy=0;
+ document.addEventListener('mousedown',function(e){
+  var pip=document.getElementById('mtg-pip');
+  if(!pip||!pip.contains(e.target)||e.target.tagName==='BUTTON')return;
+  dragging=true; pip.style.cursor='grabbing';
+  ox=e.clientX-pip.getBoundingClientRect().left;
+  oy=e.clientY-pip.getBoundingClientRect().top;
+ });
+ document.addEventListener('mousemove',function(e){
+  if(!dragging)return;
+  var pip=document.getElementById('mtg-pip'); if(!pip)return;
+  pip.style.right='auto';pip.style.bottom='auto';
+  pip.style.left=Math.max(0,Math.min(e.clientX-ox,window.innerWidth-pip.offsetWidth))+'px';
+  pip.style.top =Math.max(0,Math.min(e.clientY-oy,window.innerHeight-pip.offsetHeight))+'px';
+ });
+ document.addEventListener('mouseup',function(){
+  dragging=false;
+  var pip=document.getElementById('mtg-pip'); if(pip)pip.style.cursor='grab';
  });
 }
 
-// ── END MEETING ────────────────────────────────────────────────────
-// endMeeting() replaced by endOrLeaveMeeting()
-
-// ── MINUTES & ARCHIVE ──────────────────────────────────────────────
+// ── MINUTES ───────────────────────────────────────────────────────
 function viewMinutes(id){
- var meetings=DB.get('meetings')||[];
- var m=meetings.find(function(x){return x.id===id;});
- if(!m)return;
+ var m=(DB.get('meetings')||[]).find(function(x){return x.id===id;}); if(!m) return;
  var users=DB.get('users')||[];
  function uname(uid){var u=users.find(function(x){return x.id===uid;})||{};return (u.fn||'Guest')+' '+(u.ln||'');}
- var body=document.getElementById('mmtg-minutes-body');
- if(body) body.innerHTML=
-  '<div style="padding:8px 0">'+
-  '<div style="background:linear-gradient(135deg,#0D2137,#2E75B6);color:#fff;border-radius:10px;padding:16px 20px;margin-bottom:16px">'+
-   '<div style="font-size:18px;font-weight:700;margin-bottom:4px">'+m.title+'<\/div>'+
-   '<div style="font-size:12px;opacity:.8">'+m.date+' at '+m.startTime+' &bull; Code: '+m.code+'<\/div>'+
-   '<div style="font-size:12px;opacity:.7;margin-top:4px">Hosted by '+uname(m.hostId)+'<\/div>'+
-  '<\/div>'+
-  '<div class="fi"><label>Attendance ('+( m.attendance||[]).length+' attended)<\/label><div style="font-size:13px;color:var(--t2)">'+(m.attendance||[]).map(uname).join(', ')+'<\/div><\/div>'+
+ var body=document.getElementById('mmtg-minutes-body'); if(!body) return;
+ body.innerHTML=
+  '<div style="background:linear-gradient(135deg,#0D2137,#2E75B6);color:#fff;border-radius:10px;padding:14px 18px;margin-bottom:14px">'+
+  '<div style="font-size:16px;font-weight:700">'+m.title+'<\/div>'+
+  '<div style="font-size:11px;opacity:.75;margin-top:2px">'+m.date+' at '+m.startTime+' &bull; Code: '+m.code+'<\/div><\/div>'+
+  '<div class="fi"><label>Attendance ('+(m.attendance||[]).length+')<\/label><div style="font-size:13px;color:var(--t2)">'+(m.attendance||[]).map(uname).join(', ')||'—'+'<\/div><\/div>'+
   '<div class="fi"><label>Agenda<\/label><div style="font-size:13px;color:var(--t2);white-space:pre-line;line-height:1.7">'+(m.agenda||'—')+'<\/div><\/div>'+
-  ((m.decisions&&m.decisions.length)?'<div class="fi"><label>Decisions Recorded ('+m.decisions.length+')<\/label><div>'+m.decisions.map(function(d,i){return '<div style="padding:6px 0;border-bottom:1px solid var(--bd);font-size:13px;color:var(--t2)"><span style="color:var(--er);margin-right:8px">'+( i+1)+'.<\/span>'+d+'<\/div>';}).join('')+'<\/div><\/div>':'')+
-  ((m.actions&&m.actions.length)?'<div class="fi"><label>Action Items ('+m.actions.length+')<\/label><div>'+m.actions.map(function(a){return '<div style="padding:7px 10px;background:var(--bg2);border-radius:8px;margin-bottom:6px;font-size:13px">'+(a.done?'&#9989;':'&#9744;')+' <b>'+a.task+'<\/b> &mdash; '+a.owner+(a.due?' (due '+a.due+')':'')+'<\/div>';}).join('')+'<\/div><\/div>':'')+
-  ((m.durationActual!=null)?'<div class="fi"><label>Duration<\/label><div style="font-size:13px;color:var(--t2)">'+m.durationActual+' minutes<\/div><\/div>':'')+
-  '<\/div>';
+  ((m.decisions&&m.decisions.length)?'<div class="fi"><label>Decisions ('+m.decisions.length+')<\/label>'+m.decisions.map(function(d,i){return '<div style="padding:5px 0;border-bottom:1px solid var(--bd);font-size:13px"><b>'+(i+1)+'.<\/b> '+d+'<\/div>';}).join('')+'<\/div>':'')+
+  ((m.actions&&m.actions.length)?'<div class="fi"><label>Action Items ('+m.actions.length+')<\/label>'+m.actions.map(function(a){return '<div style="padding:6px 10px;background:var(--bg2);border-radius:7px;margin-bottom:5px;font-size:13px">'+(a.done?'&#9989;':'&#9744;')+' <b>'+a.task+'<\/b> &mdash; '+(a.owner||'')+(a.due?' (due '+a.due+')':'')+'<\/div>';}).join('')+'<\/div>':'')+
+  ((m.durationActual!=null)?'<div class="fi"><label>Duration<\/label><div>'+m.durationActual+' minutes<\/div><\/div>':'');
  _activeMtgId=id;
  openM('mmtg-minutes');
 }
-
 function downloadMinutes(){
- var id=_activeMtgId;
- if(!id)return;
- var meetings=DB.get('meetings')||[];
- var m=meetings.find(function(x){return x.id===id;});
- if(!m)return;
+ var id=_activeMtgId; if(!id) return;
+ var m=(DB.get('meetings')||[]).find(function(x){return x.id===id;}); if(!m) return;
  var users=DB.get('users')||[];
  function uname(uid){var u=users.find(function(x){return x.id===uid;})||{};return (u.fn||'Guest')+' '+(u.ln||'');}
- var date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+ var today=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Minutes — '+m.title+'<\/title>'+
-  '<style>body{font-family:"Segoe UI",Arial,sans-serif;max-width:800px;margin:40px auto;color:#1a1a2e;line-height:1.7}'+
-  'h1{font-size:22px;color:#1A3557;border-bottom:3px solid #2E75B6;padding-bottom:8px}h2{font-size:15px;color:#2E75B6;margin-top:24px}'+
-  'table{width:100%;border-collapse:collapse;margin:10px 0}td,th{padding:8px 12px;border:1px solid #e8edf3;font-size:13px}th{background:#f0f4f8;font-weight:700}'+
-  '.hdr{background:#0D2137;color:#fff;padding:20px;border-radius:10px;margin-bottom:24px}.ai{padding:7px 12px;background:#f8fafc;border-radius:6px;margin-bottom:5px;font-size:13px}'+
-  '.print-btn{display:block;margin:24px auto;padding:12px 30px;background:#0D2137;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}'+
-  '@media print{.print-btn{display:none}}<\/style><\/head><body>'+
-  '<div class="hdr"><h1 style="color:#fff;border:none;margin:0">'+m.title+'<\/h1><div style="opacity:.7;font-size:13px;margin-top:4px">'+m.date+' &bull; '+m.startTime+' &bull; Code: '+m.code+'<\/div><\/div>'+
-  '<h2>Meeting Details<\/h2><table><tr><td><b>Hosted by<\/b><\/td><td>'+uname(m.hostId)+'<\/td><\/tr>'+
-  '<tr><td><b>Date & Time<\/b><\/td><td>'+m.date+' at '+m.startTime+'<\/td><\/tr>'+
-  '<tr><td><b>Duration<\/b><\/td><td>'+(m.durationActual!=null?m.durationActual+' minutes':'—')+'<\/td><\/tr>'+
-  '<tr><td><b>Meeting Code<\/b><\/td><td style="font-family:monospace;font-weight:700">'+m.code+'<\/td><\/tr><\/table>'+
-  '<h2>Attendance ('+( m.attendance||[]).length+')<\/h2><p>'+(m.attendance||[]).map(uname).join(', ')+'<\/p>'+
-  '<h2>Agenda<\/h2><pre style="background:#f8fafc;padding:14px;border-radius:8px;font-family:inherit;font-size:13px;white-space:pre-wrap">'+(m.agenda||'—')+'<\/pre>'+
-  ((m.decisions&&m.decisions.length)?'<h2>Decisions ('+m.decisions.length+')<\/h2>'+m.decisions.map(function(d,i){return '<div class="ai"><b>'+(i+1)+'.<\/b> '+d+'<\/div>';}).join(''):'<h2>Decisions<\/h2><p style="color:#666">None recorded.<\/p>')+
-  ((m.actions&&m.actions.length)?'<h2>Action Items ('+m.actions.length+')<\/h2><table><tr><th>#<\/th><th>Task<\/th><th>Owner<\/th><th>Due Date<\/th><th>Status<\/th><\/tr>'+m.actions.map(function(a,i){return '<tr><td>'+(i+1)+'<\/td><td>'+a.task+'<\/td><td>'+a.owner+'<\/td><td>'+(a.due||'—')+'<\/td><td>'+(a.done?'Done':'Pending')+'<\/td><\/tr>';}).join('')+'<\/table>':'<h2>Action Items<\/h2><p style="color:#666">None recorded.<\/p>')+
-  '<p style="color:#aaa;font-size:11px;margin-top:30px;border-top:1px solid #eee;padding-top:10px">Generated by SIAS &bull; Caritas of Hope Foundation &bull; '+date+'<\/p>'+
-  '<button class="print-btn" onclick="window.print()">&#128438; Print / Save as PDF<\/button>'+
-  '<\/body><\/html>';
+  '<style>body{font-family:"Segoe UI",Arial,sans-serif;max-width:800px;margin:40px auto;color:#1a1a2e;line-height:1.7}h1{color:#0D2137;border-bottom:3px solid #2E75B6;padding-bottom:8px}h2{color:#2E75B6;font-size:15px;margin-top:20px}table{width:100%;border-collapse:collapse}td,th{padding:8px 12px;border:1px solid #e0e0e0;font-size:13px}th{background:#f5f7fa;font-weight:700}.hdr{background:#0D2137;color:#fff;padding:20px;border-radius:10px;margin-bottom:24px}.print-btn{display:block;margin:24px auto;padding:12px 30px;background:#0D2137;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}@media print{.print-btn{display:none}}<\/style><\/head><body>'+
+  '<div class="hdr"><h1 style="color:#fff;border:none;margin:0">'+m.title+'<\/h1><div style="opacity:.7;font-size:13px;margin-top:4px">'+m.date+' &bull; '+m.startTime+' &bull; '+m.code+'<\/div><\/div>'+
+  '<h2>Details<\/h2><table><tr><td><b>Hosted by<\/b><\/td><td>'+uname(m.hostId)+'<\/td><\/tr><tr><td><b>Date<\/b><\/td><td>'+m.date+' at '+m.startTime+'<\/td><\/tr>'+
+  '<tr><td><b>Duration<\/b><\/td><td>'+(m.durationActual||0)+' minutes<\/td><\/tr><tr><td><b>Code<\/b><\/td><td style="font-family:monospace;font-weight:700">'+m.code+'<\/td><\/tr><\/table>'+
+  '<h2>Attendance ('+(m.attendance||[]).length+')<\/h2><p>'+(m.attendance||[]).map(uname).join(', ')||'—'+'<\/p>'+
+  '<h2>Agenda<\/h2><pre style="background:#f5f7fa;padding:14px;border-radius:8px;font-family:inherit;font-size:13px;white-space:pre-wrap">'+(m.agenda||'—')+'<\/pre>'+
+  ((m.decisions&&m.decisions.length)?'<h2>Decisions ('+m.decisions.length+')<\/h2>'+m.decisions.map(function(d,i){return '<p><b>'+(i+1)+'.<\/b> '+d+'<\/p>';}).join(''):'<h2>Decisions<\/h2><p style="color:#666">None.<\/p>')+
+  ((m.actions&&m.actions.length)?'<h2>Action Items<\/h2><table><tr><th>#<\/th><th>Task<\/th><th>Owner<\/th><th>Due<\/th><th>Status<\/th><\/tr>'+m.actions.map(function(a,i){return '<tr><td>'+(i+1)+'<\/td><td>'+a.task+'<\/td><td>'+(a.owner||'')+'<\/td><td>'+(a.due||'—')+'<\/td><td>'+(a.done?'Done':'Pending')+'<\/td><\/tr>';}).join('')+'<\/table>':'<h2>Actions<\/h2><p style="color:#666">None.<\/p>')+
+  '<p style="color:#aaa;font-size:11px;margin-top:30px;border-top:1px solid #eee;padding-top:10px">Caritas of Hope Foundation &bull; SIAS &bull; '+today+'<\/p>'+
+  '<button class="print-btn" onclick="window.print()">&#128438; Print / Save as PDF<\/button><\/body><\/html>';
  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
- var a=document.createElement('a');
- a.href=URL.createObjectURL(blob);
+ var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
  a.download='Minutes_'+m.code+'_'+m.date+'.html';
  document.body.appendChild(a);a.click();document.body.removeChild(a);
  setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
- toast('Minutes downloaded','ok');
+ toast('Minutes downloaded — open and print to PDF','ok');
 }
 function downloadMinutesDirect(id){ _activeMtgId=id; downloadMinutes(); }
-
-function editMeeting(id){ toast('To edit: cancel and reschedule the meeting','in'); }
+function editMeeting(id){ toast('To edit: cancel and reschedule','in'); }
 
 
 // ══ PASSWORD RESET MANAGEMENT (Admin) ═══════════════════════════════
@@ -9091,7 +9228,7 @@ function _doLeaveMeeting(){
 
 function _cleanupMeeting(){
  // Stop timer
- if(_mtgTimerInterval){ clearInterval(_mtgTimerInterval); _mtgTimerInterval = null; }
+ if(_timerIv){ clearInterval(_timerIv); _timerIv = null; }
  _mtgStartTime = null;
  // Stop media streams
  if(_localStream){
