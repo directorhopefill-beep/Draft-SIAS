@@ -1066,6 +1066,55 @@ function submitPasswordReset(){
 }
 
 // ══ BOOTSTRAP ════════════════════════════════════════════════════════
+
+// ══ CLICK DELEGATION (data-vault-action + data-action) ═════════════
+document.addEventListener('click', function(e){
+ // ── Vault file actions ────────────────────────────────────────────
+ var vbtn = e.target.closest('[data-vault-action]');
+ if(vbtn){
+  var vaction = vbtn.getAttribute('data-vault-action');
+  var vid     = vbtn.getAttribute('data-vault-id');
+  if(vaction === 'download')    { downloadVaultDoc(vid); return; }
+  if(vaction === 'preview')     { previewVaultDoc(vid); return; }
+  if(vaction === 'delete')      { deleteVaultDoc(vid); return; }
+  if(vaction === 'open-folder') { openVaultFolder(vbtn.getAttribute('data-folder')); return; }
+  if(vaction === 'no-file')     { toast('No file attached — please re-upload with a file','wa'); return; }
+  if(vaction === 'dl-pay'){
+   downloadPayslipPDF(vbtn.getAttribute('data-uid'), vbtn.getAttribute('data-period')); return;
+  }
+ }
+ // ── General action buttons ─────────────────────────────────────────
+ var abtn = e.target.closest('[data-action]');
+ if(abtn){
+  var action = abtn.getAttribute('data-action');
+  var aid    = abtn.getAttribute('data-id') || abtn.getAttribute('data-vault-id') || '';
+  // Payslip
+  if(action === 'approve-ps')   { approvePayslip(aid); return; }
+  if(action === 'reject-ps')    { rejectPayslip(aid); return; }
+  // Budget
+  if(action === 'approve-bud')  { approveProgBudget(aid); return; }
+  if(action === 'reject-bud')   { rejectProgBudget(aid); return; }
+  // Leave
+  if(action === 'approve-leave'){ appLv(aid); return; }
+  if(action === 'reject-leave') { rejLv(aid); return; }
+  // Duty correction
+  if(action === 'approve-duty') { approveDutyChange(aid); return; }
+  if(action === 'reject-duty')  { rejectDutyChange(aid); return; }
+  // Expenditure
+  if(action === 'approve-exp-l1'){ approveExp(aid,'L1'); return; }
+  if(action === 'approve-exp-l2'){ approveExp(aid,'L2'); return; }
+  if(action === 'approve-exp-l3'){ approveExp(aid,'L3'); return; }
+  if(action === 'reject-exp')   { rejectExp(aid); return; }
+  // Password reset (Admin)
+  if(action === 'pw-approve')   { approvePwReset(aid); return; }
+  if(action === 'pw-decline')   { declinePwReset(aid); return; }
+  // Payslip download
+  if(action === 'dl-pay'){
+   downloadPayslipPDF(abtn.getAttribute('data-uid'), abtn.getAttribute('data-period')); return;
+  }
+ }
+});
+
 document.addEventListener('DOMContentLoaded',function(){
  var isNew=!DB.get('seeded');
  seed();
@@ -1083,8 +1132,6 @@ document.addEventListener('DOMContentLoaded',function(){
  var un=document.getElementById('lun');
  if(un)un.addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
  applyResponsive();
- _startPipSync();
- _initPipDrag();
 });
 </script>
 </head>
@@ -1696,23 +1743,14 @@ document.addEventListener('DOMContentLoaded',function(){
  </div>
  <div class="g4 mb4" id="admstats"></div>
   <div class="al in mb4" id="adm-device-note"><span>&#128274;</span> <strong>Data is stored on this device only.</strong> Export all data to backup or share with another device.</div>
-  <div style="margin-bottom:16px">
-   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-    <h3 style="font-size:15px;font-weight:700;color:var(--nv)">&#128272; Password Reset Requests
-     <span id="pw-reset-badge" class="bdg" style="display:none;margin-left:8px">0</span>
-    </h3>
-    <button class="btn bol bsm" onclick="loadPwResets()">&#128260; Refresh</button>
-   </div>
-   <div id="pw-reset-list" style="max-height:400px;overflow-y:auto">
-    <div style="text-align:center;color:var(--t3);padding:20px;font-size:13px">Loading...</div>
-   </div>
-  </div>
+
   <div class="al in mb4" id="adm-device-note"><span>&#128274;</span> <strong>Data is stored on this device only.</strong> To use SIAS on another device or browser, use <b>Export All Data</b> to download a backup, then <b>Import Backup</b> on the other device. Staff accounts, payslips and all records travel with the export file.</div>
  <div class="tbr">
   <button class="tbt on" id="admtab-stf" onclick="swTab('admin','stf',this)">All Staff</button>
   <button class="tbt" id="admtab-pay" onclick="swTab('admin','pay',this)">Payroll Processing</button>
   <button class="tbt" id="admtab-lva" onclick="swTab('admin','lva',this)">Leave Approvals</button>
   <button class="tbt" id="admtab-ann" onclick="swTab('admin','ann',this)">Announcements</button>
+  <button class="tbt" id="admtab-pwreset" onclick="swTab('admin','pwreset',this)">&#128272; Password Resets <span id="pw-reset-badge" class="bdg" style="display:none">0</span></button>
  </div>
  <div class="tp on" id="tp-admin-stf">
   <div class="cd"><div class="cdh"><h3>Staff Directory</h3>
@@ -1750,6 +1788,18 @@ document.addEventListener('DOMContentLoaded',function(){
    <div id="ann-list" style="padding:4px 0"></div>
   </div>
  </div>
+
+ <!-- PASSWORD RESETS TAB -->
+ <div class="tp" id="tp-admin-pwreset">
+  <div class="cdh" style="margin-bottom:12px">
+   <h3>&#128272; Password Reset Requests</h3>
+   <button class="btn bol bsm" onclick="loadPwResets()">&#128260; Refresh</button>
+  </div>
+  <div id="pw-reset-list" style="max-height:500px;overflow-y:auto">
+   <div style="text-align:center;color:var(--t3);padding:24px;font-size:13px">No password reset requests yet.</div>
+  </div>
+ </div>
+
 </div>
 <!-- Staff Self-Edit Modal (contact info only) -->
 <div class="mo" id="mprofedit"><div class="mc">
@@ -3520,7 +3570,10 @@ document.addEventListener('DOMContentLoaded',function(){
   </div>
   <div class="al in"><span>ℹ</span> The 6-digit Staff ID you assign is the staff member's permanent login username. Temporary password <b>Staff@123</b> is set — staff <b>must set their own password on first login</b>.</div>
  </div>
- <div class="mf"><button class="btn bol" onclick="closeM('mnst')">Cancel</button><button class="btn bnn" onclick="createStf()">Crea
+ <div class="mf"><button class="btn bol" onclick="closeM('mnst')">Cancel</button><button class="btn bnn" onclick="createStf()">&#10003; Create Account</button>
+ </div>
+</div></div>
+
 <script>
 function loadPay(){
  const ps=(DB.get('payslips')||[]).filter(p=>p.uid===CU.id);
@@ -4027,6 +4080,10 @@ function sendMsg(){
 }
 // ══ ADMIN ═════════════════════════════════════════════════════════════
 function loadAdm(){
+ try{
+
+ try{
+
  if(!PERMS.canViewAdmin(CU.role) && !PERMS.canViewAudit(CU.role)){nav('dashboard');return;}
  const isAdmin  = CU.role==='admin';
  const isHR     = CU.role==='hr';
@@ -4065,211 +4122,200 @@ function loadAdm(){
  if(stfTab) stfTab.style.display = canManageStaff ? '' : 'none';
 
  loadPwResets();
+
+ } catch(err){
+  console.error('loadAdm error:', err.message, err.stack);
+  toast('Admin page refresh error: '+err.message,'er');
+ }
+
+ } catch(err){
+  console.error('loadAdm error:', err.message);
+ }
 }
+
+function deactivateStaff(uid){
+ if(!PERMS.canDeactivate(CU.role)){toast('Admin access required','er');return;}
+ var users=DB.get('users')||[];
+ var u=users.find(function(x){return x.id===uid;});
+ if(!u){toast('User not found','er');return;}
+ if(u.role==='admin'){toast('Cannot deactivate the system administrator','er');return;}
+ if(!confirm('Deactivate '+u.fn+' '+u.ln+'? They will not be able to log in.')){return;}
+ DB.set('users', users.map(function(x){
+  return x.id===uid ? Object.assign({},x,{st:'Inactive'}) : x;
+ }));
+ toast(u.fn+' '+u.ln+' deactivated','wa');
+ alog('ADMIN','Staff','Deactivated: '+u.fn+' '+u.ln+' ('+u.sn+')');
+ try{ loadAdm(); } catch(e){ console.warn(e); }
+}
+
+function reactivateStaff(uid){
+ if(!PERMS.canDeactivate(CU.role)){toast('Admin access required','er');return;}
+ var users=DB.get('users')||[];
+ var u=users.find(function(x){return x.id===uid;});
+ if(!u)return;
+ DB.set('users', users.map(function(x){
+  return x.id===uid ? Object.assign({},x,{st:'Active'}) : x;
+ }));
+ toast(u.fn+' '+u.ln+' reactivated','ok');
+ alog('ADMIN','Staff','Reactivated: '+u.fn+' '+u.ln+' ('+u.sn+')');
+ try{ loadAdm(); } catch(e){ console.warn(e); }
+}
+
+function saveEdit(){
+ saveStf();
+}
+
+
 function rendStf(users){
- const q=(document.getElementById('stfsrch')||{}).value||'';
- const f=users.filter(u=>(u.fn+' '+u.ln+u.sn+u.dn).toLowerCase().includes(q.toLowerCase()));
- const canEdit = PERMS.canEditStaff(CU.role);
- const canPS   = PERMS.canCreatePayslip(CU.role);
- document.querySelector('#stftbl tbody').innerHTML=f.map(u=>{
-  const editBtn  = canEdit ? '<button class="btn bol bxs" onclick="openEdit(\'' +u.id+ '\')">✏️ Edit<\/button>' : '';
-  const psBtn    = canPS   ? '<button class="btn bsk bxs" onclick="openNewPS(\'' +u.id+ '\')">💵 Payslip<\/button>' : '';
-  const tmpBadge = u.mustChangePw ? '<span class="bx wa" style="margin-left:4px;font-size:9px">⚠ Temp PW<\/span>' : '';
-  const stBadge  = '<span class="bx '+(u.st==='Active'?'ok':'er')+'">'+u.st+'<\/span>';
-  return '<tr>'+
-   '<td class="tmono tsm">'+u.sn+'<\/td>'+
-   '<td><div style="display:flex;align-items:center;gap:7px"><div style="width:26px;height:26px;border-radius:50%;background:var(--sk);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">'+u.av+'<\/div>'+u.fn+' '+u.ln+'<\/div><\/td>'+
-   '<td>'+u.dn+'<\/td><td>'+u.desg+'<\/td>'+
-   '<td>'+stBadge+tmpBadge+'<\/td>'+
-   '<td>'+
-    '<span class="bx '+(ROLES[u.role]?'':'nv')+'" style="font-size:10px">'+((ROLES[u.role]||{}).label||u.role)+'<\/span>'+
-    (u.hrAccess&&u.hrAccess.length?'<span class="bx nv" style="margin-left:3px;font-size:9px">HR<\/span>':'')+
-    (u.finAccess&&u.finAccess.length?'<span class="bx" style="margin-left:3px;font-size:9px;background:var(--okb);color:var(--ok)">FIN<\/span>':'')+
-    (u.moduleAccess&&u.moduleAccess.length?'<span class="bx" style="margin-left:3px;font-size:9px;background:var(--skp);color:var(--sk)">PROG<\/span>':'')+
-   '<\/td>'+
-   '<td style="display:flex;gap:4px">'+editBtn+psBtn+'<\/td>'+
+ try{
+  var q = (document.getElementById('stfsrch')||{}).value || '';
+  var f = users.filter(function(u){
+   return (u.fn+' '+u.ln+u.sn+(u.dn||'')).toLowerCase().indexOf(q.toLowerCase()) >= 0;
+  });
+  var canEdit = PERMS.canEditStaff(CU.role);
+  var canPS   = PERMS.canCreatePayslip(CU.role);
+  var canDeact = PERMS.canDeactivate(CU.role);
+  var rows = f.map(function(u){
+   var editBtn = canEdit
+    ? '<button class="btn bol bxs" onclick="openEdit(\''+u.id+'\')">&#9998; Edit<\/button>'
+    : '';
+   var psBtn = canPS
+    ? '<button class="btn bsk bxs" onclick="openNewPS(\''+u.id+'\')">&#128181; Payslip<\/button>'
+    : '';
+   var deactBtn = canDeact
+    ? (u.st === 'Active'
+       ? '<button class="btn ber bxs" onclick="deactivateStaff(\''+u.id+'\')">&#9940; Deactivate<\/button>'
+       : '<button class="btn bok bxs" onclick="reactivateStaff(\''+u.id+'\')">&#10003; Activate<\/button>')
+    : '';
+   var tmpBadge = u.mustChangePw
+    ? '<span class="bx wa" style="margin-left:4px;font-size:9px">&#9888; Temp PW<\/span>'
+    : '';
+   var stBadge = '<span class="bx '+(u.st==='Active'?'ok':'er')+'">'+u.st+'<\/span>';
+   var roleLabel = (ROLES[u.role]||{}).label || u.role || 'Staff';
+   return '<tr>'+
+    '<td class="tmono tsm">'+u.sn+'<\/td>'+
+    '<td><div style="display:flex;align-items:center;gap:7px">'+
+     '<div style="width:26px;height:26px;border-radius:50%;background:var(--sk);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">'+u.av+'<\/div>'+
+     u.fn+' '+u.ln+
+    '<\/div><\/td>'+
+    '<td>'+(u.dn||'')+'<\/td>'+
+    '<td>'+(u.desg||'')+'<\/td>'+
+    '<td>'+stBadge+tmpBadge+'<\/td>'+
+    '<td><span class="bx" style="font-size:10px">'+roleLabel+'<\/span>'+
+     (u.hrAccess&&u.hrAccess.length?'<span class="bx nv" style="margin-left:3px;font-size:9px">HR<\/span>':'')+
+     (u.finAccess&&u.finAccess.length?'<span class="bx" style="margin-left:3px;font-size:9px;background:var(--okb);color:var(--ok)">FIN<\/span>':'')+
+    '<\/td>'+
+    '<td style="display:flex;gap:4px;flex-wrap:wrap">'+editBtn+psBtn+deactBtn+'<\/td>'+
    '<\/tr>';
- }).join('');
+  }).join('');
+  var tbody = document.querySelector('#stftbl tbody');
+  if(tbody) tbody.innerHTML = rows || '<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:14px">No staff found<\/td><\/tr>';
+ } catch(err){
+  console.error('rendStf error:', err.message);
+ }
 }
-function filtStf(){rendStf(DB.get('users')||[])}
-function runPay(){if(!requirePerm('canRunPayroll'))return;toast('Payroll computed for all staff — payslips published for confirmation','ok');alog('ADMIN','Payroll','Ran payroll computation for '+new Date().toLocaleString('default',{month:'long',year:'numeric'}))}
-function subBank(){
- if(!requirePerm('canSubmitBank'))return;
- const uc=(DB.get('payslips')||[]).filter(p=>!p.conf).length;
- uc?toast(uc+' unconfirmed payslip(s) auto-confirmed — payroll submitted to bank','wa'):toast('Payroll submitted to bank successfully','ok');
- alog('ADMIN','Payroll','Submitted payroll to bank — '+new Date().toLocaleString('default',{month:'long',year:'numeric'}));
+
+
+// ══ STAFF CREATION ════════════════════════════════════════════════════
+
+function previewID(){
+ var sid = (document.getElementById('ns-staffid')||{}).value || '';
+ var prev = document.getElementById('ns-id-preview');
+ if(prev) prev.textContent = sid || '——————';
 }
-function appLv(id){
- if(!requirePerm('canApproveLeave'))return;
- const leaves=DB.get('leaves')||[];
- const lv=leaves.find(l=>l.id===id);
- if(!lv){toast('Leave not found','er');return;}
- // HR cannot approve own leave — must be admin/ED
- if(lv.uid===CU.id){toast('You cannot approve your own leave application','er');return;}
- // HR can only approve staff leaves, not other HR — admin required for HR leaves
- const requester=(DB.get('users')||[]).find(u=>u.id===lv.uid)||{};
- if(requester.role==='hr'&&CU.role==='hr'){toast('HR leave must be approved by Admin or Executive Director','er');return;}
- DB.set('leaves',leaves.map(l=>l.id===id?{...l,status:'Approved',approvedBy:CU.fn+' '+CU.ln,approvedAt:new Date().toISOString()}:l));
- toast('Leave application approved','ok');
- alog('ADMIN','Leave','Approved leave '+id);
- sendSystemNotification('Your leave application has been approved by '+CU.fn+' '+CU.ln,CU.sn);
- loadAdm();
-}
-function rejLv(id){
- if(!requirePerm('canApproveLeave'))return;
- const lv=(DB.get('leaves')||[]).find(l=>l.id===id);
- if(lv&&lv.uid===CU.id){toast('You cannot reject your own leave application','er');return;}
- const reason=prompt('Reason for rejection (optional):');
- DB.set('leaves',(DB.get('leaves')||[]).map(l=>l.id===id?{...l,status:'Rejected',rejectedBy:CU.fn+' '+CU.ln,rejectedAt:new Date().toISOString(),rejectReason:reason||''}:l));
- toast('Leave application rejected','wa');
- alog('ADMIN','Leave','Rejected leave '+id);
- sendSystemNotification('Your leave application has been declined by '+CU.fn+' '+CU.ln,CU.sn);
- loadAdm();
-}
-// ── Open new staff modal with smart defaults ──────────────────────
+
+
 function openNewStfModal(){
- if(!requirePerm('canCreateStaff'))return;
- // Clear all fields
- ['nsf','nsl','nse','nsdg','nss','ns-staffid'].forEach(id=>{
-  const el=document.getElementById(id); if(el) el.value='';
+ if(!requirePerm('canCreateStaff')) return;
+ ['nsf','nsl','nse','nsdg','nss','ns-staffid'].forEach(function(id){
+  var el=document.getElementById(id); if(el) el.value='';
  });
- document.getElementById('nsr').value='staff';
- document.getElementById('nset').value='Full-Time';
- document.getElementById('ns-id-error').style.display='none';
+ var nsr=document.getElementById('nsr'); if(nsr) nsr.value='staff';
+ var nset=document.getElementById('nset'); if(nset) nset.value='Full-Time';
+ var errEl=document.getElementById('ns-id-error'); if(errEl) errEl.style.display='none';
  previewID();
  openM('mnst');
 }
 
-// ── Preview Staff ID as admin types ─────────────────────────────
-function previewID(){
- const sid = document.getElementById('ns-staffid')?.value.trim() || '';
- // Only allow digits
- const clean = sid.replace(/[^0-9]/g,'');
- if(document.getElementById('ns-staffid') && sid !== clean){
-  document.getElementById('ns-staffid').value = clean;
- }
- const el = document.getElementById('ns-id-preview');
- if(el) el.textContent = clean.padEnd(6,'—').split('').join(' ');
-}
 
 function createStf(){
- if(!requirePerm('canCreateStaff'))return;
-
- const errEl = document.getElementById('ns-id-error');
- errEl.style.display = 'none';
-
- // Get and validate the 6-digit Staff ID
- const sid = document.getElementById('ns-staffid').value.trim();
-
+ if(!requirePerm('canCreateStaff')) return;
+ var errEl = document.getElementById('ns-id-error');
+ if(errEl) errEl.style.display = 'none';
+ var sid = ((document.getElementById('ns-staffid')||{}).value||'').trim();
  if(!sid){
-  errEl.textContent = 'Staff ID is required.';
-  errEl.style.display = 'block'; return;
+  if(errEl){ errEl.textContent='Staff ID is required.'; errEl.style.display='block'; }
+  return;
  }
  if(!/^\d{6}$/.test(sid)){
-  errEl.textContent = 'Staff ID must be exactly 6 digits (e.g. 100001).';
-  errEl.style.display = 'block'; return;
+  if(errEl){ errEl.textContent='Staff ID must be exactly 6 digits.'; errEl.style.display='block'; }
+  return;
  }
-
- // Check for duplicate
- const users = DB.get('users') || [];
- if(users.find(u => u.sn === sid)){
-  errEl.textContent = 'Staff ID ' + sid + ' is already in use. Please enter a different number.';
-  errEl.style.display = 'block'; return;
+ var users = DB.get('users') || [];
+ if(users.find(function(u){ return u.sn === sid; })){
+  if(errEl){ errEl.textContent='Staff ID '+sid+' is already in use.'; errEl.style.display='block'; }
+  return;
  }
-
- // Collect personal info
- const f  = document.getElementById('nsf').value.trim();
- const l  = document.getElementById('nsl').value.trim();
- const e  = document.getElementById('nse').value.trim();
- const d  = document.getElementById('nsd').value;
- const dg = document.getElementById('nsdg').value.trim();
- const r  = document.getElementById('nsr').value;
- const s  = parseInt(document.getElementById('nss').value) || 0;
-
- if(!f || !l || !e || !dg || !s){
-  toast('Please fill all personal information fields', 'er'); return;
+ var f  = ((document.getElementById('nsf')||{}).value||'').trim();
+ var l  = ((document.getElementById('nsl')||{}).value||'').trim();
+ var e  = ((document.getElementById('nse')||{}).value||'').trim();
+ var d  = ((document.getElementById('nsd')||{}).value||'');
+ var dg = ((document.getElementById('nsdg')||{}).value||'').trim();
+ var r  = ((document.getElementById('nsr')||{}).value||'staff');
+ var s  = parseInt(((document.getElementById('nss')||{}).value||'0')) || 0;
+ var et = ((document.getElementById('nset')||{}).value||'Full-Time');
+ if(!f||!l||!e||!dg){
+  toast('Please fill all required fields (name, email, designation)','er'); return;
  }
-
- const dn = {EDU:'Education',HLT:'Health',HUM:'Humanitarian Aid',IND:'Inclusivity & Diversity',ENV:'Environmental Sustainability',SEC:'Secretariat',FIN:'Finance',HRD:'Human Resources',ICT:'ICT',ADM:'Administration'};
-
+ var DEPT_NAMES = {EDU:'Education',HLT:'Health',HUM:'Humanitarian Aid',
+  IND:'Inclusivity & Diversity',ENV:'Environmental Sustainability',
+  SEC:'Secretariat',FIN:'Finance',HRD:'Human Resources',ICT:'ICT',ADM:'Administration'};
  users.push({
   id:'u'+Date.now(), sn:sid, pw:'Staff@123', mustChangePw:true,
   fn:f, ln:l, em:e, ph:'', nid:'', role:r,
-  dept:d, dn:dn[d]||d, desg:dg,
-  et:document.getElementById('nset').value,
+  dept:d, dn:DEPT_NAMES[d]||d, desg:dg, et:et,
   sd:new Date().toISOString().split('T')[0], st:'Active',
   bk:'', bac:'', bbr:'',
-  bs:s, ha:Math.round(s*.2), ta:5000, ma:3000,
+  bs:s, sal:s, ha:Math.round(s*0.15), ta:5000,
   kra:'', nssf:'', nhif:'',
-  pb:0, ss:0, lb:0, lm:0,
-  lbal:{Annual:21,Sick:10,Study:5,Maternity:0,Paternity:0,Compassionate:5},
-  av:f[0].toUpperCase()+l[0].toUpperCase(),
-  moduleAccess:[]  // HR/Admin assigns module access after onboarding
+  pb:0, lbal:{Annual:21,Sick:10,Study:5,Maternity:0,Paternity:0,Compassionate:5},
+  av:(f[0]||'S').toUpperCase()+(l[0]||'T').toUpperCase(),
+  hrAccess:[], finAccess:[], moduleAccess:[]
  });
-
  DB.set('users', users);
  closeM('mnst');
- toast('Account created — Staff ID: ' + sid + ' | Temporary password: Staff@123', 'ok');
- alog('ADMIN','Staff','Created account for '+f+' '+l+' — Staff ID: '+sid);
-
- // Clear all fields
- ['nsf','nsl','nse','nsdg','nss','ns-staffid'].forEach(id=>{
-  const el=document.getElementById(id); if(el) el.value='';
+ toast('Account created — Staff ID: '+sid+' | Default password: Staff@123','ok');
+ alog('ADMIN','Staff','Created: '+f+' '+l+' ('+sid+')');
+ // Clear fields
+ ['nsf','nsl','nse','nsdg','nss','ns-staffid'].forEach(function(id){
+  var el=document.getElementById(id); if(el) el.value='';
  });
  previewID();
- loadAdm();
+ try{ loadAdm(); } catch(ex){ console.warn('loadAdm:', ex.message); }
 }
-// ══ STAFF EDIT / SAVE ═══════════════════════════════════════════════
-const DEPTS={EDU:'Education',HLT:'Health',HUM:'Humanitarian Aid',IND:'Inclusivity & Diversity',ENV:'Environmental Sustainability',SEC:'Secretariat',FIN:'Finance',HRD:'Human Resources',ICT:'ICT',ADM:'Administration'};
+
+// ══ STAFF EDIT ════════════════════════════════════════════════════════
+
 function openEdit(uid){
- // Staff can only view/edit their own profile through the My Profile page
- if(!requirePerm('canEditStaff') && uid!==CU.id){toast('You can only edit your own profile from the My Profile page','er');return;}
- const users=DB.get('users')||[];const u=users.find(x=>x.id===uid);if(!u)return;
- document.getElementById('medit-title').textContent='Edit — '+u.fn+' '+u.ln;
- const snEl=document.getElementById('medit-sn');
- if(snEl)snEl.textContent='Staff ID: '+u.sn;
- document.getElementById('edit-uid').value=uid;
- const f=[['fn',u.fn],['ln',u.ln],['em',u.em],['ph',u.ph],['nid',u.nid],['kra',u.kra],
-  ['nssf',u.nssf],['nhif',u.nhif],['desg',u.desg],['sd',u.sd],
-  ['bk',u.bk],['bac',u.bac],['bbr',u.bbr],
-  ['bs',u.bs||0],['ha',u.ha||0],['ta',u.ta||0],['ma',u.ma||0],
-  ['ss',u.ss||0],['lb',u.lb||0],['lm',u.lm||0]];
- f.forEach(([k,v])=>{const el=document.getElementById('edit-'+k);if(el)el.value=v||'';});
- ['st','dept','et','role'].forEach(k=>{const el=document.getElementById('edit-'+k);if(el)el.value=u[k]||'';});
- document.getElementById('edit-dept').value=u.dept||'ADM';
- document.getElementById('edit-pw').value='';
- const lb=u.lbal||{};
- document.getElementById('edit-lbal-a').value=lb.Annual||0;
- // Populate programme module checkboxes
- const ma=u.moduleAccess||[];
- ['health','education','environment','humanitarian','inclusivity','special'].forEach(m=>{
-  const el=document.getElementById('edit-mod-'+m);if(el)el.checked=ma.includes(m);
+ if(!requirePerm('canEditStaff') && uid !== CU.id){
+  toast('You can only edit your own profile from My Profile','er'); return;
+ }
+ var users = DB.get('users')||[];
+ var u = users.find(function(x){ return x.id===uid; });
+ if(!u) return;
+ var fields = {
+  'edit-uid':u.id, 'edit-fn':u.fn, 'edit-ln':u.ln, 'edit-em':u.em,
+  'edit-ph':u.ph||'', 'edit-dept':u.dept||'', 'edit-desg':u.desg||'',
+  'edit-role':u.role, 'edit-sal':u.bs||u.sal||0, 'edit-et':u.et||'Full-Time',
+  'edit-kra':u.kra||'', 'edit-nssf':u.nssf||'', 'edit-nhif':u.nhif||''
+ };
+ Object.keys(fields).forEach(function(id){
+  var el=document.getElementById(id); if(el) el.value=fields[id];
  });
- const paEl=document.getElementById('edit-mod-prog_admin');
- if(paEl)paEl.checked=u.role==='program_admin';
- // Populate HR module checkboxes
- const hr=u.hrAccess||[];
- const isHR=u.role==='hr';
- const hrFull=document.getElementById('edit-mod-hr_full');if(hrFull)hrFull.checked=isHR;
- ['hr_leave','hr_onboard','hr_contracts','hr_incidents','hr_analytics','hr_gps','hr_approvals'].forEach(m=>{
-  const el=document.getElementById('edit-mod-'+m);if(el)el.checked=isHR||hr.includes(m);
- });
- // Populate Finance module checkboxes
- const fin=u.finAccess||[];
- const isFin=u.role==='finance';
- const finFull=document.getElementById('edit-mod-fin_full');if(finFull)finFull.checked=isFin;
- ['fin_payroll','fin_budgets','fin_expenditure','fin_coa','fin_records','fin_analytics','fin_approvals'].forEach(m=>{
-  const el=document.getElementById('edit-mod-'+m);if(el)el.checked=isFin||fin.includes(m);
- });
- document.getElementById('edit-lbal-s').value=lb.Sick||0;
- document.getElementById('edit-lbal-st').value=lb.Study||0;
- document.getElementById('edit-lbal-m').value=lb.Maternity||0;
- document.getElementById('edit-lbal-p').value=lb.Paternity||0;
- document.getElementById('edit-lbal-c').value=lb.Compassionate||0;
- // Don't show deactivate for admin itself
- document.getElementById('edit-del-btn').style.display=uid===CU.id?'none':'inline-flex';
  openM('medit');
 }
+
+
 function saveStf(){
  if(!requirePerm('canEditStaff'))return;
  const uid=document.getElementById('edit-uid').value;
@@ -4869,6 +4915,8 @@ function startMeeting(id){
 }
 
 function joinConference(id){
+ // Init drag once
+ if(!window._pipDragInit){ window._pipDragInit=true; _initPipDrag(); }
  var meetings = DB.get('meetings')||[];
  var m = meetings.find(function(x){return x.id===id;});
  if(!m){toast('Meeting not found','er');return;}
@@ -8946,6 +8994,7 @@ function importSIASData(){
   reader.readAsText(file);
  };
  document.body.appendChild(input);input.click();document.body.removeChild(input);
+}
 // ── MINIMIZE / EXPAND / END / LEAVE ─────────────────────────────────────────────
 
 function minimizeMeeting(){
@@ -9105,8 +9154,7 @@ function _initPipDrag(){
   if(pip) pip.style.cursor = 'grab';
  });
 }
-
-}</script>
+</script>
 
 <!-- ─── FLOATING MEETING PIP BAR (minimized state) ──────────────── -->
 <div id="mtg-pip" style="display:none;position:fixed;bottom:20px;right:20px;z-index:9999;background:#161B22;border:1px solid #30363D;border-radius:14px;padding:10px 14px;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);min-width:280px;max-width:380px">
