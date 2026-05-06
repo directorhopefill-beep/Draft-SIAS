@@ -11,7 +11,7 @@
 <style>
 :root{--nv:#0D2137;--nv2:#1A3557;--sk:#2E75B6;--sk2:#5A9ED4;--skp:#D6E4F0;--tl:#1F6E8C;--mn:#E8F5F0;--gd:#C9A84C;--gdp:#FDF6E3;--ok:#1A7A4A;--okb:#E6F5ED;--wn:#B45309;--wnb:#FEF3C7;--er:#B91C1C;--erb:#FEE2E2;--in:#1D4ED8;--inb:#EFF6FF;--bg:#F0F4F8;--bg2:#FFF;--bg3:#E8ECF2;--bd:#D1DCE8;--bd2:#B8C9DA;--t1:#0D2137;--t2:#3A5068;--t3:#6B8399;--t4:#9BB5C8;--sw:258px;--hh:62px;--r:10px;--rl:14px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.6;overflow-x:hidden}
+body{touch-action:manipulation;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.6;overflow-x:hidden}
 button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inherit}
 #LS{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--nv) 0%,var(--nv2) 50%,var(--tl) 100%)overflow-y:auto;-webkit-overflow-scrolling:touch}
 .lc{background:var(--bg2);border-radius:20px;padding:42px;width:420px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
@@ -59,8 +59,8 @@ button{cursor:pointer;font-family:inherit}input,select,textarea{font-family:inhe
 .tb2:hover{background:var(--skp);border-color:var(--sk);color:var(--sk)}
 .nd{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--er);border-radius:50%;border:2px solid var(--bg2)}
 .tc{font-size:12px;color:var(--t3);font-family:'DM Mono',monospace}
-#PC{flex:1;padding:24px;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.pv{display:none}.pv.on{display:block;min-height:0;animation:fadeIn .15s ease}
+#PC{flex:1;padding:24px;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;scroll-behavior:smooth}
+.pv{display:none}.pv.on{display:block;min-height:0;overflow-y:auto;animation:fadeIn .15s ease}
 .cd{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden}.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .cdh{padding:13px 17px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
 .cdh h3{font-size:13px;font-weight:600;color:var(--nv)}
@@ -499,10 +499,63 @@ text-align:center;min-width:52px;line-height:1.3}
 .ccb.on{background:#1F6FEB;border-color:#1F6FEB;color:#fff}
 .ccb.active{background:#238636;border-color:#238636;color:#fff}
 .ccb.danger{background:#da3633;border-color:#da3633;color:#fff}
-@media(max-width:600px){
- .ccb{padding:6px 10px;min-width:42px;font-size:13px}
- #conf-side{width:100%!important;position:fixed;bottom:0;left:0;right:0;max-height:50vh;z-index:100}
- #conf-main{flex:1}
+/* ── MEETINGS PAGE — responsive ──────────────────────── */
+.mtg-card{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;transition:.2s}
+.mtg-card:hover{border-color:var(--sk);box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.mtg-card .mtg-date-block{background:var(--nv);color:#fff;border-radius:10px;padding:7px 10px;text-align:center;flex-shrink:0;min-width:48px}
+.mtg-card .mtg-day{font-size:20px;font-weight:700;line-height:1}
+.mtg-card .mtg-mon{font-size:10px;opacity:.75;text-transform:uppercase;letter-spacing:.6px}
+.mtg-card.live .mtg-date-block{background:var(--er)}
+.mtg-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+
+/* ── CONFERENCE ROOM — control buttons ───────────────── */
+.ccb{background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:8px;
+  padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;
+  text-align:center;min-width:48px;line-height:1.4;flex-shrink:0}
+.ccb:hover{background:#30363D}
+.ccb.on{background:#1F6FEB;border-color:#1F6FEB;color:#fff}
+.ccb.active{background:#238636;border-color:#238636;color:#fff}
+.ccb.danger{background:#da3633;border-color:#da3633;color:#fff}
+
+/* ── TABLET (768px and below) ─────────────────────────── */
+@media(max-width:768px){
+ #vmeetings .sh2{ flex-direction:column; align-items:flex-start; gap:8px }
+ #conf-body{ flex-direction:column !important }
+ #conf-side{
+  width:100% !important;
+  border-left:none !important;
+  border-top:1px solid #30363D;
+  max-height:42vh;
+  min-height:180px;
+ }
+ #conf-main{ min-height:200px; flex-shrink:1 }
+ #conf-controls{ padding:6px 8px; gap:5px }
+ .ccb{ padding:6px 9px; min-width:42px; font-size:12px }
+ #conf-topbar{ padding:7px 10px; gap:6px }
+ .mtg-card{ padding:11px 12px; gap:10px }
+}
+
+/* ── PHONE (480px and below) ──────────────────────────── */
+@media(max-width:480px){
+ #conf-topbar{ flex-wrap:wrap; padding:6px 8px }
+ #conf-topbar > div:first-child{ width:100% }
+ #conf-side{ max-height:38vh; min-height:160px }
+ #conf-main{ min-height:160px }
+ #conf-controls{ gap:4px; padding:5px 6px }
+ .ccb{ padding:5px 7px; min-width:38px; font-size:11px }
+ .ccb br + span{ font-size:8px !important }
+ #vmeetings h2{ font-size:17px }
+ .mtg-card{ flex-direction:column; gap:8px }
+ .mtg-card .mtg-date-block{ display:flex; gap:6px; align-items:baseline; padding:5px 10px; min-width:auto; border-radius:20px }
+ .mtg-card .mtg-day{ font-size:16px }
+ .mtg-actions button, .mtg-actions .btn{ font-size:12px; padding:6px 10px }
+ #conf-topbar button{ font-size:11px; padding:4px 8px }
+}
+
+/* ── VERY SMALL (360px) ───────────────────────────────── */
+@media(max-width:360px){
+ .ccb{ padding:4px 5px; min-width:34px; font-size:10px }
+ #conf-controls{ gap:3px }
 }
 .conf-ctrl-btn{background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:10px;padding:9px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;white-space:nowrap}
 .conf-ctrl-btn:hover{background:#30363D}
@@ -535,6 +588,300 @@ text-align:center;min-width:52px;line-height:1.3}
 .action-item{display:flex;align-items:flex-start;gap:8px;padding:8px;border-radius:8px;background:#21262D;margin-bottom:6px;font-size:12px;color:#E6EDF3}
 .action-item.done .ai-task{text-decoration:line-through;opacity:.5}
 
+
+/* ══ CRITICAL SCROLL FIX — PC + TABLET + PHONE ═══════════════════ */
+
+/* Full-height app shell — prevents infinite expansion */
+html, body { height:100%; overflow:hidden; }
+
+#AP {
+  flex-direction: row;     /* bootApp() sets display:flex via inline style */
+  height: 100vh;
+  height: 100dvh;          /* dynamic viewport — correct on mobile with address bar */
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar keeps its own scroll */
+#SB { overflow-y: auto; overflow-x: hidden; height: 100%; }
+
+/* Main content area: fills remaining height, scrolls internally */
+#PC {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  min-height: 0;           /* CRITICAL: flex item must be allowed to shrink */
+}
+
+/* Each page view fills at least the full visible area */
+.pv { min-height: calc(100vh - var(--hh,60px)); }
+.pv.on { display: block; }
+
+/* ══ MEETING CARDS — mobile-first ═════════════════════════════════ */
+.mtg-card {
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: border-color .15s, box-shadow .15s;
+  word-break: break-word;
+}
+.mtg-card:hover { border-color: var(--sk); box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+.mtg-card.ended { opacity: .65; }
+.mtg-date-block {
+  background: var(--nv);
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  text-align: center;
+  flex-shrink: 0;
+  min-width: 46px;
+}
+.mtg-date-block.live { background: var(--er); }
+.mtg-day  { font-size: 20px; font-weight: 700; line-height: 1; }
+.mtg-mon  { font-size: 9px;  opacity: .8; text-transform: uppercase; letter-spacing: .6px; }
+.mtg-card > div:last-child { flex: 1; min-width: 0; }
+.mtg-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  align-items: center;
+}
+.mtg-actions button { flex-shrink: 0; }
+
+/* ══ CONFERENCE ROOM — full fixes ══════════════════════════════════ */
+#conf-room {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;              /* JS sets to flex */
+  flex-direction: column;
+  background: #0D1117;
+  overflow: hidden;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Topbar never wraps on any screen — just shrinks */
+#conf-topbar {
+  flex-shrink: 0;
+  min-height: 44px;
+  overflow: hidden;
+}
+
+/* Body: row on desktop, column on mobile */
+#conf-body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Video/whiteboard area */
+#conf-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+
+#video-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 8px;
+  overflow: hidden;
+  align-content: start;
+  min-height: 80px;
+}
+
+/* Side panel */
+#conf-side {
+  width: 280px;
+  flex-shrink: 0;
+  background: #161B22;
+  border-left: 1px solid #30363D;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Control bar: wraps gracefully, never clips */
+#conf-controls {
+  flex-shrink: 0;
+  background: #161B22;
+  border-top: 1px solid #30363D;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Control buttons */
+.ccb {
+  background: #21262D;
+  color: #E6EDF3;
+  border: 1px solid #30363D;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: center;
+  line-height: 1.3;
+}
+.ccb:hover  { background: #30363D; }
+.ccb.on     { background: #1F6FEB; border-color: #1F6FEB; color: #fff; }
+.ccb.active { background: #238636; border-color: #238636; color: #fff; }
+.ccb.danger { background: #da3633; border-color: #da3633; color: #fff; }
+
+/* ══ TABLET  (max 900px) ═══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  #conf-side { width: 240px; }
+}
+
+/* ══ MOBILE  (max 768px) ═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* App layout */
+  #AP { flex-direction: column; }
+
+  /* Meetings page header */
+  #vmeetings .sh2 { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+  /* Meeting card date block smaller */
+  .mtg-date-block { padding: 5px 8px; min-width: 40px; }
+  .mtg-day  { font-size: 17px; }
+
+  /* Conference room: stack video above panel */
+  #conf-body { flex-direction: column !important; }
+
+  #conf-side {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 1px solid #30363D;
+    max-height: 40vh;
+    min-height: 150px;
+    flex-shrink: 0;
+  }
+
+  #conf-main { min-height: 120px; flex: 1; }
+
+  /* Smaller controls */
+  .ccb { padding: 6px 9px; font-size: 12px; }
+  .ccb br + span { font-size: 9px !important; }
+
+  /* Topbar compact */
+  #conf-topbar { padding: 6px 8px; gap: 5px; }
+}
+
+/* ══ SMALL PHONE  (max 480px) ══════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* More vertical space for video */
+  #conf-side { max-height: 35vh; min-height: 140px; }
+  #conf-main { min-height: 100px; }
+
+  /* Shrink topbar buttons */
+  #conf-topbar button { padding: 4px 8px; font-size: 10px; }
+  #conf-timer { font-size: 11px; }
+
+  /* Smaller control buttons */
+  .ccb { padding: 5px 7px; font-size: 11px; min-width: 38px; }
+
+  /* Meetings: single action button per row on tiny screens */
+  .mtg-actions { gap: 5px; }
+  .mtg-actions button { font-size: 11px; padding: 5px 10px; }
+
+  /* Stat cards 2-col */
+  #mtg-stats.g4 { grid-template-columns: 1fr 1fr; }
+}
+
+/* ══ VERY SMALL PHONE  (max 360px) ════════════════════════════════ */
+@media (max-width: 360px) {
+  .ccb { padding: 4px 5px; min-width: 34px; font-size: 10px; }
+  #conf-controls { gap: 4px; padding: 6px 8px; }
+  .ccb br + span { display: none; } /* hide labels, show icons only */
+}
+
+/* ══ PiP BAR — always accessible ══════════════════════════════════ */
+#mtg-pip {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: #161B22;
+  border: 1px solid #30363D;
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  min-width: 240px;
+  max-width: calc(100vw - 32px);
+  cursor: grab;
+}
+@media (max-width: 480px) {
+  #mtg-pip { bottom: 8px; right: 8px; left: 8px; min-width: 0; max-width: none; border-radius: 12px; }
+}
+
+/* ── MODAL MOBILE FIX ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .mo { padding: 8px; align-items: flex-end; }
+  .mc, .mc.lg {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    margin: 0;
+  }
+  .mb2 { padding: 12px !important; }
+  .mh  { padding: 12px 14px !important; }
+  .mf  { padding: 10px 14px !important; }
+}
+@media (max-width: 480px) {
+  .mc, .mc.lg { max-height: 95vh; border-radius: 14px 14px 0 0; }
+  .fr { flex-direction: column; }
+  .fr > .fi { width: 100% !important; }
+}
+
+/* ── MODAL FOOTER ALWAYS PINNED (flex modal fix) ───────────────── */
+/* When mc is display:flex+column, overflow must be hidden so        */
+/* the scrollable mb2 is constrained and mf stays at the bottom.    */
+.mc[style*="flex-direction:column"],
+.mc[style*="flex-direction: column"] {
+  overflow: hidden !important;
+}
+
+/* ── MESSAGES — mobile responsive ──────────────────────────────── */
+@media (max-width: 768px) {
+  #msgrid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+  #msgrid > .cd,
+  #msgrid > #msgd {
+    height: 45vh !important;
+    min-height: 200px;
+  }
+}
 </style>
 
 <script>
@@ -923,10 +1270,41 @@ function swTab(s,t,b){
  const tp=document.getElementById('tp-'+s+'-'+t);if(tp)tp.classList.add('on');
  if(b){b.closest('.tbr').querySelectorAll('.tbt').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
 }
+
+function swNotifTab(tab){
+ window._notifTab = tab;
+ // Use data-notiftab attribute for reliable selection
+ document.querySelectorAll('[data-notiftab]').forEach(function(b){
+  var isActive = b.getAttribute('data-notiftab') === tab;
+  b.style.background = isActive ? 'var(--sk)' : 'transparent';
+  b.style.color      = isActive ? '#fff'       : 'var(--t2)';
+  b.style.border     = isActive ? '1px solid var(--sk)' : '1px solid var(--bd)';
+  b.style.fontWeight = isActive ? '700' : '400';
+ });
+ loadNotifs();
+}
 function loadNotifs(){
- const ns=DB.get('notifications')||[];const ur=ns.filter(n=>!n.read).length;
- document.getElementById('ndt').style.display=ur?'block':'none';
- document.getElementById('NL').innerHTML=ns.map(n=>`<div class="npi" onclick="nav('${n.link}');document.getElementById('NP').classList.remove('on')"><div class="nd2 ${n.read?'r':''}"><\/div><div><div style="font-size:13px;color:var(--t1)">${n.txt}<\/div><div style="font-size:11px;color:var(--t3);margin-top:1px">${fmtD(n.date)}<\/div><\/div><\/div>`).join('')||'<div style="padding:16px;text-align:center;color:var(--t3);font-size:13px">No notifications<\/div>';
+ var allNs  = DB.get('notifications')||[];
+ var tab    = window._notifTab||'all';
+ var ns     = tab==='unread' ? allNs.filter(function(n){return !n.read;}) : allNs;
+ var ur     = allNs.filter(function(n){return !n.read;}).length;
+ var ndt    = document.getElementById('ndt');
+ if(ndt) ndt.style.display = ur?'block':'none';
+ var ct = document.getElementById('np-unread-ct');
+ if(ct) ct.textContent = ur?'('+ur+')':'';
+ var NL = document.getElementById('NL');
+ if(!NL) return;
+ if(!ns.length){
+  NL.innerHTML='<div style="padding:20px;text-align:center;color:var(--t3);font-size:13px">'+(tab==='unread'?'No unread notifications':'No notifications yet')+'</div>';
+  return;
+ }
+ NL.innerHTML=ns.map(function(n){
+  return '<div class="npi" onclick="nav(\''+n.link+'\');document.getElementById(\'NP\').classList.remove(\'on\')">'+
+   '<div class="nd2 '+(n.read?'r':'')+'"><\/div>'+
+   '<div><div style="font-size:13px;color:var(--t1)">'+n.txt+'<\/div>'+
+   '<div style="font-size:11px;color:var(--t3);margin-top:1px">'+fmtD(n.date)+'<\/div><\/div>'+
+  '<\/div>';
+ }).join('');
 }
 function togNP(){document.getElementById('NP').classList.toggle('on')}
 function markAllRead(){DB.set('notifications',(DB.get('notifications')||[]).map(n=>({...n,read:true})));document.getElementById('ndt').style.display='none';loadNotifs();toast('All notifications marked as read')}
@@ -1314,11 +1692,20 @@ document.addEventListener('DOMContentLoaded',function(){
   </div>
  </div>
  <div class="np" id="NP">
-  <div style="padding:12px 14px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center">
-   <span style="font-weight:600;font-size:13px;color:var(--nv)">Notifications</span>
-   <span style="font-size:11px;color:var(--sk);cursor:pointer" onclick="markAllRead()">Mark all read</span>
+  <!-- NP header -->
+  <div style="padding:10px 14px;border-bottom:1px solid var(--bd);flex-shrink:0">
+   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <span style="font-weight:700;font-size:13px;color:var(--nv)">&#128276; Notifications</span>
+    <span style="font-size:11px;color:var(--sk);cursor:pointer;font-weight:600" onclick="markAllRead()">Mark all read</span>
+   </div>
+   <!-- Filter tabs -->
+   <div style="display:flex;gap:4px">
+    <button id="np-tab-all" data-notiftab="all" onclick="swNotifTab('all')" style="flex:1;padding:5px 8px;border:1px solid var(--sk);border-radius:20px;background:var(--sk);color:#fff;font-size:11px;font-weight:700;cursor:pointer">All</button>
+    <button id="np-tab-unread" data-notiftab="unread" onclick="swNotifTab('unread')" style="flex:1;padding:5px 8px;border:1px solid var(--bd);border-radius:20px;background:transparent;color:var(--t2);font-size:11px;cursor:pointer">Unread <span id="np-unread-ct" style="font-weight:700"></span></button>
+   </div>
   </div>
-  <div id="NL"></div>
+  <!-- Notification list -->
+  <div id="NL" style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch"></div>
  </div>
  <div id="PC">
 <!-- DASHBOARD -->
@@ -1734,23 +2121,42 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 <!-- MESSAGES -->
 <div class="pv" id="vmessages">
- <div class="sh2"><div><h2>Internal Messages</h2><p>HR inbox and communication</p></div>
-  <button class="btn bsk" onclick="openMsgModal()">+ New Message</button>
+ <div class="sh2">
+  <div><h2>&#128172; Internal Messages</h2><p>Send and receive messages with colleagues</p></div>
+  <button class="btn bsk bsm" onclick="openMsgModal()">+ Compose</button>
  </div>
- <div id="msgrid" style="display:grid;grid-template-columns:265px 1fr;gap:13px">
-  <div id="msgl-wrap" class="cd" style="height:calc(100vh - 185px);overflow:hidden;display:flex;flex-direction:column">
-   <div style="padding:9px;border-bottom:1px solid var(--bd)">
-    <input type="text" id="msgsrch" placeholder="Search..." style="width:100%;padding:7px 11px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;background:var(--bg)" oninput="filtMsgs()">
-   </div>
-   <div id="msgl" style="flex:1;overflow-y:auto"></div>
+
+ <!-- Tab bar -->
+ <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:14px">
+  <div class="tbr" style="min-width:300px;flex-wrap:nowrap;display:flex">
+   <button class="tbt on" data-msgtab="inbox" style="white-space:nowrap;flex-shrink:0" onclick="swMsgTab('inbox',this)">&#128229; Inbox <span class="bdg" id="bdg-msg-inbox" style="display:none">0</span></button>
+   <button class="tbt" data-msgtab="sent" style="white-space:nowrap;flex-shrink:0" onclick="swMsgTab('sent',this)">&#128228; Sent</button>
+   <button class="tbt" data-msgtab="all" style="white-space:nowrap;flex-shrink:0" onclick="swMsgTab('all',this)">&#128172; All</button>
   </div>
-  <div class="cd" id="msgd" style="height:calc(100vh - 185px);overflow-y:auto;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch">
+ </div>
+
+ <!-- Message grid: list + detail (stack on mobile) -->
+ <div id="msgrid" style="display:grid;grid-template-columns:280px 1fr;gap:14px">
+
+  <!-- LEFT: message list -->
+  <div class="cd" style="height:calc(100vh - 210px);min-height:300px;overflow:hidden;display:flex;flex-direction:column;padding:0">
+   <div style="padding:8px 10px;border-bottom:1px solid var(--bd);flex-shrink:0">
+    <input type="text" id="msgsrch" placeholder="Search messages..." oninput="filtMsgs()" style="width:100%;padding:7px 11px;border:1px solid var(--bd);border-radius:var(--r);font-size:13px;background:var(--bg);color:var(--t1)">
+   </div>
+   <div id="msgl" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
+  </div>
+
+  <!-- RIGHT: message detail -->
+  <div class="cd" id="msgd" style="height:calc(100vh - 210px);min-height:300px;overflow-y:auto;display:flex;flex-direction:column;-webkit-overflow-scrolling:touch;padding:0">
    <div class="fc" style="flex:1;flex-direction:column;gap:8px;color:var(--t3)">
-    <div style="font-size:32px;opacity:.2">✉️</div><p style="font-size:13px">Select a message to read</p>
+    <div style="font-size:36px;opacity:.25">&#9993;</div>
+    <p style="font-size:13px">Select a message to read</p>
    </div>
   </div>
+
  </div>
 </div>
+<!-- ADMIN -->
 <!-- ADMIN -->
 <div class="pv" id="vadmin">
  <div class="sh2"><div><h2>Staff Management</h2><p>HR &amp; Finance Administration</p></div>
@@ -2109,129 +2515,194 @@ document.addEventListener('DOMContentLoaded',function(){
 </div></div>
 
 <!-- Staff View/Edit Modal -->
-<div class="mo" id="medit"><div class="mc lg">
- <div class="mh">
- <div>
-  <h3 id="medit-title">Edit Staff Account</h3>
-  <div id="medit-sn" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--t3);margin-top:2px"></div>
- </div><div class="mx" onclick="closeM('medit')">×</div></div>
- <div class="mb2">
+<div class="mo" id="medit"><div class="mc lg" style="max-width:680px;width:calc(100% - 24px);max-height:90vh;display:flex;flex-direction:column;margin:12px auto;overflow:hidden">
+ <div class="mh" style="flex-shrink:0">
+  <div>
+   <h3 id="medit-title" style="margin:0">Edit Staff Account</h3>
+   <div id="medit-sn" style="font-family:monospace;font-size:11px;color:var(--t3);margin-top:2px"></div>
+  </div>
+  <div class="mx" onclick="closeM('medit')">&#215;</div>
+ </div>
+
+ <!-- Scrollable body -->
+ <div class="mb2" style="flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:16px">
   <input type="hidden" id="edit-uid">
-  <div style="font-size:11px;font-weight:600;color:var(--sk);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">Personal Information</div>
-  <div class="fr fr3">
-   <div class="fi"><label>First Name</label><input type="text" id="edit-fn"></div>
-   <div class="fi"><label>Last Name</label><input type="text" id="edit-ln"></div>
-   <div class="fi"><label>Email</label><input type="email" id="edit-em"></div>
-  </div>
-  <div class="fr fr3">
-   <div class="fi"><label>Phone</label><input type="text" id="edit-ph"></div>
-   <div class="fi"><label>National ID</label><input type="text" id="edit-nid"></div>
-   <div class="fi"><label>KRA PIN</label><input type="text" id="edit-kra"></div>
-  </div>
-  <div class="fr fr3">
-   <div class="fi"><label>NSSF Number</label><input type="text" id="edit-nssf"></div>
-   <div class="fi"><label>NHIF Number</label><input type="text" id="edit-nhif"></div>
-   <div class="fi"><label>Status</label>
-    <select id="edit-st"><option value="Active">Active</option><option value="Suspended">Suspended</option><option value="On Notice">On Notice</option><option value="Resigned">Resigned</option><option value="Terminated">Terminated</option></select>
-   </div>
-  </div>
-  <div style="font-size:11px;font-weight:600;color:var(--sk);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 12px">Employment Details</div>
-  <div class="fr fr3">
-   <div class="fi"><label>Department</label>
-    <select id="edit-dept">
-     <option value="EDU">Education</option><option value="HLT">Health</option><option value="HUM">Humanitarian Aid</option>
-     <option value="IND">Inclusivity &amp; Diversity</option><option value="ENV">Environmental Sustainability</option>
-     <option value="SEC">Secretariat</option><option value="FIN">Finance</option><option value="HRD">Human Resources</option>
-     <option value="ICT">ICT</option><option value="ADM">Administration</option>
+
+  <!-- Personal Info -->
+  <div style="font-size:11px;font-weight:700;color:var(--sk);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">&#128100; Personal Information</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:4px">
+   <div class="fi" style="margin:0"><label>First Name *</label><input type="text" id="edit-fn" placeholder="First name"></div>
+   <div class="fi" style="margin:0"><label>Last Name *</label><input type="text" id="edit-ln" placeholder="Last name"></div>
+   <div class="fi" style="margin:0"><label>Email</label><input type="email" id="edit-em" placeholder="email@org.org"></div>
+   <div class="fi" style="margin:0"><label>Phone</label><input type="text" id="edit-ph" placeholder="+254..."></div>
+   <div class="fi" style="margin:0"><label>National ID</label><input type="text" id="edit-nid"></div>
+   <div class="fi" style="margin:0"><label>KRA PIN</label><input type="text" id="edit-kra"></div>
+   <div class="fi" style="margin:0"><label>NSSF No.</label><input type="text" id="edit-nssf"></div>
+   <div class="fi" style="margin:0"><label>NHIF No.</label><input type="text" id="edit-nhif"></div>
+   <div class="fi" style="margin:0"><label>Status</label>
+    <select id="edit-st" style="width:100%;padding:8px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
+     <option value="Active">Active</option>
+     <option value="Suspended">Suspended</option>
+     <option value="On Notice">On Notice</option>
+     <option value="Resigned">Resigned</option>
+     <option value="Terminated">Terminated</option>
     </select>
    </div>
-   <div class="fi"><label>Designation</label><input type="text" id="edit-desg"></div>
-   <div class="fi"><label>Employment Type</label>
-    <select id="edit-et"><option>Full-Time</option><option>Part-Time</option><option>Contract</option></select>
-   </div>
   </div>
-  <div class="fr fr3">
-   <div class="fi"><label>Start Date</label><input type="date" id="edit-sd"></div>
-   <div class="fi"><label>Role Level</label>
-    <select id="edit-role"><option value="staff">Staff</option><option value="manager">Manager</option><option value="hr">HR</option><option value="finance">Finance</option><option value="admin">Admin</option></select>
-   </div>
-   <div class="fi"><label>Reset Password To</label><input type="text" id="edit-pw" placeholder="Leave blank to keep current"></div>
-  </div>
-  <div style="font-size:11px;font-weight:600;color:var(--sk);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 12px">Salary &amp; Compensation (KES)</div>
-  <div class="fr" class="igrid-4">
-   <div class="fi"><label>Basic Salary</label><input type="number" id="edit-bs"></div>
-   <div class="fi"><label>House Allowance</label><input type="number" id="edit-ha"></div>
-   <div class="fi"><label>Transport Allow.</label><input type="number" id="edit-ta"></div>
-   <div class="fi"><label>Medical Allow.</label><input type="number" id="edit-ma"></div>
-  </div>
-  <div style="font-size:11px;font-weight:600;color:var(--sk);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 12px">Bank Details</div>
-  <div class="fr fr3">
-   <div class="fi"><label>Bank Name</label><input type="text" id="edit-bk"></div>
-   <div class="fi"><label>Account Number</label><input type="text" id="edit-bac"></div>
-   <div class="fi"><label>Branch</label><input type="text" id="edit-bbr"></div>
-  </div>
-  <div style="font-size:11px;font-weight:600;color:var(--sk);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 12px">Other Deductions / Financial</div>
-  <div class="fr fr3">
-   <div class="fi"><label>SACCO Shares (KES)</label><input type="number" id="edit-ss"></div>
-   <div class="fi"><label>Loan Balance (KES)</label><input type="number" id="edit-lb"></div>
-   <div class="fi"><label>Monthly Loan Repay.</label><input type="number" id="edit-lm"></div>
-  </div>
-  <div style="font-size:11px;font-weight:600;color:var(--sk);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 12px">System Module Access &amp; Role Permissions</div>
-  <div style="background:var(--skp);border-radius:var(--r);padding:14px;margin-bottom:14px">
-   <div style="font-size:12px;color:var(--t2);margin-bottom:12px">Grant access to system modules. Only Admin can assign these rights. Staff without explicit access can only see their own personal records.</div>
 
-   <!-- HR Module Rights -->
-   <div style="font-size:11px;font-weight:700;color:var(--nv);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;margin-top:4px">&#128101; HR Management</div>
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;padding:10px;background:var(--bg2);border-radius:var(--r)">
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_full"> &#128273; Full HR Access (HR Officer role)</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_leave"> &#127965; Leave Approvals</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_onboard"> &#128101; Onboarding &amp; Offboarding</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_contracts"> &#128196; Contracts Management</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_incidents"> &#9888; Incidents &amp; Compliance</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_analytics"> &#128200; HR Analytics &amp; Reports</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_gps"> &#128205; GPS Attendance Tracking</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-hr_approvals"> &#9989; HR Approvals Centre</label>
+  <!-- Employment -->
+  <div style="font-size:11px;font-weight:700;color:var(--sk);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">&#128188; Employment Details</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:4px">
+   <div class="fi" style="margin:0"><label>Department</label>
+    <select id="edit-dept" style="width:100%;padding:8px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
+     <option value="EDU">Education</option>
+     <option value="HLT">Health</option>
+     <option value="HUM">Humanitarian Aid</option>
+     <option value="IND">Inclusivity &amp; Diversity</option>
+     <option value="ENV">Environmental Sustainability</option>
+     <option value="SEC">Secretariat</option>
+     <option value="FIN">Finance</option>
+     <option value="HRD">Human Resources</option>
+     <option value="ICT">ICT</option>
+     <option value="ADM">Administration</option>
+    </select>
    </div>
-
-   <!-- Finance Module Rights -->
-   <div style="font-size:11px;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">&#128176; Finance Management</div>
-   <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px;padding:10px;background:var(--bg2);border-radius:var(--r)">
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_full"> &#128273; Full Finance Access (Finance Officer role)</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_payroll"> &#128181; Payroll &amp; Payslip Management</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_budgets"> &#128200; Budget Approvals</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_expenditure"> &#128203; Expenditure Approvals</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_coa"> &#128221; Chart of Accounts</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_records"> &#128196; Financial Records</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_analytics"> &#128202; Finance Analytics</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-fin_approvals"> &#9989; Finance Approvals Centre</label>
+   <div class="fi" style="margin:0"><label>Designation / Title</label><input type="text" id="edit-desg" placeholder="e.g. Programme Officer"></div>
+   <div class="fi" style="margin:0"><label>Employment Type</label>
+    <select id="edit-et" style="width:100%;padding:8px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
+     <option value="Full-Time">Full-Time</option>
+     <option value="Part-Time">Part-Time</option>
+     <option value="Contract">Contract</option>
+     <option value="Intern">Intern</option>
+     <option value="Volunteer">Volunteer</option>
+    </select>
    </div>
-
-   <!-- Programme Module Rights -->
-   <div style="font-size:11px;font-weight:700;color:var(--sk);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">&#128202; Programme Modules</div>
-   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:8px;padding:10px;background:var(--bg2);border-radius:var(--r)" id="edit-module-checks">
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-health"> &#127973; Health</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-education"> &#127891; Education</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-environment"> &#127807; Environment</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-humanitarian"> &#129309; Humanitarian Aid</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-inclusivity"> &#127752; Inclusivity &amp; Diversity</label>
-    <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-special"> &#11088; Special Projects</label>
-   </div>
-   <div style="padding:0 10px 4px"><label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer"><input type="checkbox" id="edit-mod-prog_admin"> &#128273; Programme Admin (can create projects, KPIs, reports across assigned modules)</label></div>
+   <div class="fi" style="margin:0"><label>Start Date</label><input type="date" id="edit-sd"></div>
+   <div class="fi" style="margin:0"><label>Basic Salary (KES)</label><input type="number" id="edit-bs" placeholder="0" min="0"></div>
+   <div class="fi" style="margin:0"><label>House Allowance</label><input type="number" id="edit-ha" placeholder="0" min="0"></div>
+   <div class="fi" style="margin:0"><label>Travel Allowance</label><input type="number" id="edit-ta" placeholder="0" min="0"></div>
+   <div class="fi" style="margin:0"><label>Medical Allowance</label><input type="number" id="edit-ma" placeholder="0" min="0"></div>
   </div>
-  <div style="font-size:11px;font-weight:600;color:var(--sk);text-transform:uppercase;letter-spacing:.06em;margin:16px 0 12px">Leave Balances (Days)</div>
-  <div class="fr" class="igrid-6">
-   <div class="fi"><label>Annual</label><input type="number" id="edit-lbal-a" min="0"></div>
-   <div class="fi"><label>Sick</label><input type="number" id="edit-lbal-s" min="0"></div>
-   <div class="fi"><label>Study</label><input type="number" id="edit-lbal-st" min="0"></div>
-   <div class="fi"><label>Maternity</label><input type="number" id="edit-lbal-m" min="0"></div>
-   <div class="fi"><label>Paternity</label><input type="number" id="edit-lbal-p" min="0"></div>
-   <div class="fi"><label>Compassionate</label><input type="number" id="edit-lbal-c" min="0"></div>
+
+  <!-- Role & Access -->
+  <div style="font-size:11px;font-weight:700;color:var(--sk);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">&#128274; Role &amp; System Access</div>
+
+  <!-- Base Role -->
+  <div class="fi" style="margin:0 0 14px">
+   <label>Base System Role <span style="color:var(--er)">*</span></label>
+   <select id="edit-role" style="width:100%;padding:9px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)" onchange="toggleAccessPanels()">
+    <option value="staff">Staff — Standard access (own profile, payslips, leave, attendance)</option>
+    <option value="manager">Manager — Can approve leave and expenditures (Level 1)</option>
+    <option value="hr">HR Officer — Full HR module access</option>
+    <option value="finance">Finance Officer — Full Finance module access</option>
+    <option value="program_admin">Programme Admin — Manage programmes and projects</option>
+    <option value="admin">System Administrator — Full system access</option>
+   </select>
+  </div>
+
+  <!-- HR Sub-module Access -->
+  <div id="acc-panel-hr" style="background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px">
+   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+    <div>
+     <div style="font-size:13px;font-weight:700;color:var(--nv)">&#128100; HR Module Access</div>
+     <div style="font-size:11px;color:var(--t3);margin-top:2px">Tick the specific HR areas this staff member can access</div>
+    </div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;color:var(--sk)">
+     <input type="checkbox" id="edit-mod-hr_full" style="width:15px;height:15px" onclick="toggleHRFull(this)"> Grant Full HR Access
+    </label>
+   </div>
+   <div id="hr-sub-checks" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px">
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-hr_leave" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Leave Management &amp; Approvals</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-hr_approvals" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> HR Approvals Dashboard</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-hr_onboard" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Staff Onboarding &amp; Offboarding</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-hr_contracts" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Contracts &amp; Duties</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-hr_incidents" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Incident Reports</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-hr_analytics" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> HR Analytics &amp; Reports</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-hr_gps" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> GPS &amp; Attendance Monitoring</label>
+   </div>
+  </div>
+
+  <!-- Finance Sub-module Access -->
+  <div id="acc-panel-fin" style="background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px">
+   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+    <div>
+     <div style="font-size:13px;font-weight:700;color:var(--nv)">&#128181; Finance Module Access</div>
+     <div style="font-size:11px;color:var(--t3);margin-top:2px">Tick the Finance areas this staff member can access</div>
+    </div>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;color:var(--sk)">
+     <input type="checkbox" id="edit-mod-fin_full" style="width:15px;height:15px" onclick="toggleFinFull(this)"> Grant Full Finance Access
+    </label>
+   </div>
+   <div id="fin-sub-checks" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px">
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-fin_payroll" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Payroll Processing &amp; Payslips</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-fin_approvals" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Finance Approvals Dashboard</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-fin_budgets" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Budget Management</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-fin_expenditure" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Expenditure &amp; Claims</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-fin_coa" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Chart of Accounts</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-fin_records" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Financial Records</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-fin_analytics" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> Finance Analytics &amp; Reports</label>
+   </div>
+  </div>
+
+  <!-- Programme Module Access -->
+  <div id="acc-panel-prog" style="background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:4px">
+   <div style="margin-bottom:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+     <div>
+      <div style="font-size:13px;font-weight:700;color:var(--nv)">&#127760; Programme Access</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:2px">Select which programmes this staff member can view and work on</div>
+     </div>
+     <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;color:var(--sk)">
+      <input type="checkbox" id="edit-mod-prog_admin" style="width:15px;height:15px"> Programme Admin (all)
+     </label>
+    </div>
+   </div>
+   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px">
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-health" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> &#10084; Health</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-education" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> &#128218; Education</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-environment" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> &#127807; Environmental Sustainability</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-humanitarian" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> &#129309; Humanitarian Aid</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-inclusivity" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> &#127752; Inclusivity &amp; Diversity</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:13px;padding:6px 8px;border-radius:6px;cursor:pointer;background:var(--bg);border:1px solid var(--bd);transition:.15s" onmouseover="this.style.borderColor='var(--sk)'" onmouseout="this.style.borderColor='var(--bd)'"><input type="checkbox" id="edit-mod-special" style="width:15px;height:15px;cursor:pointer;flex-shrink:0"> &#11088; Special Projects</label>
+   </div>
+  </div>
+
+  <!-- Leave Balances -->
+  <div style="font-size:11px;font-weight:700;color:var(--sk);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">&#127958; Leave Balances (Days)</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:4px">
+   <div class="fi" style="margin:0"><label>Annual</label><input type="number" id="edit-lbal-a" min="0" value="21"></div>
+   <div class="fi" style="margin:0"><label>Sick</label><input type="number" id="edit-lbal-s" min="0" value="10"></div>
+   <div class="fi" style="margin:0"><label>Study</label><input type="number" id="edit-lbal-st" min="0" value="5"></div>
+   <div class="fi" style="margin:0"><label>Maternity</label><input type="number" id="edit-lbal-m" min="0" value="0"></div>
+   <div class="fi" style="margin:0"><label>Paternity</label><input type="number" id="edit-lbal-p" min="0" value="0"></div>
+   <div class="fi" style="margin:0"><label>Compassionate</label><input type="number" id="edit-lbal-c" min="0" value="5"></div>
+  </div>
+
+  <!-- Bank Details -->
+  <div style="font-size:11px;font-weight:700;color:var(--sk);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">&#127981; Bank Details</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:4px">
+   <div class="fi" style="margin:0"><label>Bank Name</label><input type="text" id="edit-bk" placeholder="e.g. KCB, Equity"></div>
+   <div class="fi" style="margin:0"><label>Account Number</label><input type="text" id="edit-bac"></div>
+   <div class="fi" style="margin:0"><label>Branch</label><input type="text" id="edit-bbr"></div>
+  </div>
+
+  <!-- Reset Password -->
+  <div style="font-size:11px;font-weight:700;color:var(--sk);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 10px">&#128272; Reset Password (Optional)</div>
+  <div class="al wa" style="margin-bottom:10px"><span>&#9888;</span> Leave blank to keep current password. Staff will be required to change on next login.</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
+   <div class="fi" style="margin:0"><label>New Password</label><input type="password" id="edit-pw" placeholder="Min 8 characters, leave blank to keep current" autocomplete="new-password"></div>
   </div>
  </div>
- <div class="mf">
-  <button class="btn bol" onclick="closeM('medit')">Cancel</button>
-  <button class="btn ber bsm" id="edit-del-btn" onclick="delStaff()">🗑 Deactivate</button>
-  <button class="btn bnn" onclick="saveStf()">💾 Save Changes</button>
+
+ <!-- Sticky footer -->
+ <div class="mf" style="flex-shrink:0;border-top:1px solid var(--bd);padding:12px 16px;display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;align-items:center;position:relative;z-index:2;background:var(--bg2)">
+  <!-- Left: deactivate/activate -->
+  <button id="btn-toggle-status" onclick="toggleStaffStatus()" style="flex-shrink:0;background:var(--erb);color:var(--er);border:1.5px solid var(--er);border-radius:var(--r);padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer" title="Deactivate or reactivate this staff account">&#9940; Deactivate Account</button>
+  <!-- Right: cancel + save -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+   <button class="btn bol" onclick="closeM('medit')" style="flex-shrink:0">Cancel</button>
+   <button class="btn bnn" onclick="saveStf()" style="flex-shrink:0">&#128190; Save Changes</button>
+  </div>
  </div>
 </div></div>
 
@@ -3186,183 +3657,184 @@ document.addEventListener('DOMContentLoaded',function(){
 <!-- ══════════════════════════════════════════════════════════════
      MEETINGS & CONFERENCING MODULE
 ══════════════════════════════════════════════════════════════ -->
-<div class="pv" id="vmeetings">
- <div class="sh2">
-  <div><h2>&#127909; Meetings &amp; Conferencing</h2><p>Schedule, host and manage WebRTC meetings with video, voice and collaboration tools</p></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-   <button class="btn bsk bsm" onclick="openNewMeeting()">+ Schedule Meeting</button>
+<div class="pv" id="vmeetings" style="overflow-x:hidden">
+ <!-- ── Header ─────────────────────────────────────────── -->
+ <div class="sh2" style="flex-wrap:wrap;gap:10px">
+  <div style="min-width:0">
+   <h2 style="margin:0;font-size:clamp(16px,4vw,22px)">&#127909; Meetings &amp; Conferencing</h2>
+   <p style="margin:4px 0 0;font-size:12px;color:var(--t3)">Schedule, host and join meetings with video and collaboration</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+   <button class="btn bsk bsm" onclick="openNewMeeting()">+ Schedule</button>
    <button class="btn bol bsm" onclick="openJoinMeeting()">&#128279; Join by Code</button>
   </div>
  </div>
 
- <div class="g4 mb4" id="mtg-stats"></div>
+ <!-- ── Stats ────────────────────────────────────────────── -->
+ <div class="g4 mb4" id="mtg-stats" style="margin-bottom:16px"></div>
 
- <!-- Mobile-friendly scrollable tab bar -->
- <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px">
-  <div class="tbr" style="min-width:480px">
-   <button class="tbt on" onclick="swTab('meetings','upcoming',this)">&#128197; Upcoming</button>
-   <button class="tbt" onclick="swTab('meetings','live',this)">&#128308; Live <span class="bdg" id="bdg-live" style="display:none">0</span></button>
-   <button class="tbt" onclick="swTab('meetings','past',this)">&#128196; Past</button>
-   <button class="tbt" onclick="swTab('meetings','myroom',this)">&#127968; My Room</button>
-   <button class="tbt" onclick="swTab('meetings','archive',this)">&#128269; Archive</button>
+ <!-- ── Tab bar — scrollable on mobile ───────────────────── -->
+ <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:14px;padding-bottom:2px">
+  <div class="tbr" style="min-width:360px;flex-wrap:nowrap;display:flex">
+   <button class="tbt on" style="white-space:nowrap;flex-shrink:0" onclick="swTab('meetings','upcoming',this)">&#128197; Upcoming</button>
+   <button class="tbt" style="white-space:nowrap;flex-shrink:0" onclick="swTab('meetings','live',this)">&#128308; Live <span class="bdg" id="bdg-live" style="display:none">0</span></button>
+   <button class="tbt" style="white-space:nowrap;flex-shrink:0" onclick="swTab('meetings','past',this)">&#128196; Past</button>
+   <button class="tbt" style="white-space:nowrap;flex-shrink:0" onclick="swTab('meetings','myroom',this)">&#127968; My Room</button>
+   <button class="tbt" style="white-space:nowrap;flex-shrink:0" onclick="swTab('meetings','archive',this)">&#128269; Archive</button>
   </div>
  </div>
 
+ <!-- ── Tab panels ────────────────────────────────────────── -->
  <div class="tp on" id="tp-meetings-upcoming">
   <div id="mtg-upcoming-list"></div>
  </div>
 
  <div class="tp" id="tp-meetings-live">
-  <div class="al in mb4" style="margin-bottom:14px"><span>&#128308;</span> Meetings currently in session — join immediately.</div>
+  <div class="al in" style="margin-bottom:12px"><span>&#128308;</span> These meetings are live now — join immediately.</div>
   <div id="mtg-live-list"></div>
  </div>
 
  <div class="tp" id="tp-meetings-past">
-  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
-   <input type="month" id="mtg-month-filter" onchange="loadMeetings()" style="padding:7px 10px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px;color:var(--t1)">
-   <input type="text" id="mtg-search" placeholder="Search meetings..." oninput="loadMeetings()" style="padding:7px 12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px;flex:1;min-width:150px;color:var(--t1)">
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+   <input type="month" id="mtg-month-filter" onchange="loadMeetings()" style="padding:7px 10px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px;color:var(--t1);min-width:140px">
+   <input type="text" id="mtg-search" placeholder="Search..." oninput="loadMeetings()" style="padding:7px 12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:12px;flex:1;min-width:120px;color:var(--t1)">
   </div>
   <div id="mtg-past-list"></div>
  </div>
 
  <div class="tp" id="tp-meetings-myroom">
-  <div class="g2">
-   <div class="cd">
-    <div class="cdh"><h3>&#127968; My Personal Room</h3></div>
-    <div id="my-room-info"></div>
-   </div>
-   <div class="cd">
-    <div class="cdh"><h3>&#9881; Room Settings</h3></div>
-    <div style="padding:14px">
-     <div class="fi"><label>Room Name</label><input type="text" id="room-name" placeholder="e.g. Allan's Meeting Room"></div>
-     <div class="fi"><label>Default Agenda</label><textarea id="room-agenda" placeholder="Default agenda..." style="min-height:70px"></textarea></div>
-     <div class="fi"><label>Default Access</label>
-      <select id="room-access" style="width:100%;padding:9px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
-       <option value="org">All Staff</option>
-       <option value="invite">Invite Only</option>
-       <option value="link">Anyone with Link</option>
-      </select>
-     </div>
-     <button class="btn bsk" style="width:100%" onclick="saveRoomSettings()">Save Settings</button>
+  <div id="my-room-info"></div>
+  <div class="cd" style="margin-top:14px">
+   <div class="cdh"><h3>&#9881; Room Settings</h3></div>
+   <div style="padding:14px">
+    <div class="fi"><label>Room Name</label><input type="text" id="room-name" placeholder="e.g. Allan's Meeting Room"></div>
+    <div class="fi"><label>Default Agenda</label><textarea id="room-agenda" placeholder="Default agenda..." style="min-height:70px"></textarea></div>
+    <div class="fi"><label>Default Access</label>
+     <select id="room-access" style="width:100%;padding:9px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
+      <option value="org">All Staff</option><option value="invite">Invite Only</option><option value="link">Anyone with Link</option>
+     </select>
     </div>
+    <button class="btn bsk" style="width:100%" onclick="saveRoomSettings()">Save Settings</button>
    </div>
   </div>
  </div>
 
  <div class="tp" id="tp-meetings-archive">
-  <div class="fi" style="margin-bottom:14px">
-   <input type="text" id="archive-search" placeholder="Search minutes, decisions, action items..." oninput="searchArchive()" style="width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
+  <div style="margin-bottom:12px">
+   <input type="text" id="archive-search" placeholder="Search minutes, decisions, actions..." oninput="searchArchive()" style="width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:var(--r);background:var(--bg);font-size:13px;color:var(--t1)">
   </div>
   <div id="mtg-archive-list"></div>
  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
-     CONFERENCE ROOM — full-screen overlay
+     CONFERENCE ROOM — full-screen overlay (responsive)
 ═══════════════════════════════════════════════════════════════ -->
-<div id="conf-room" style="display:none;position:fixed;inset:0;background:#0D1117;z-index:10000;flex-direction:column;font-family:inherit">
+<div id="conf-room" style="display:none;position:fixed;inset:0;background:#0D1117;z-index:10000;flex-direction:column;font-family:inherit;overflow:hidden">
 
- <!-- ── TOP BAR ─────────────────────────────────────────────────── -->
- <div id="conf-topbar" style="background:#161B22;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #30363D;flex-shrink:0;flex-wrap:wrap">
-  <div style="flex:1;min-width:0">
-   <div id="conf-title" style="color:#fff;font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Meeting</div>
-   <div id="conf-info" style="color:#8B949E;font-size:11px;margin-top:1px">Connecting...</div>
+ <!-- TOP BAR -->
+ <div id="conf-topbar" style="background:#161B22;padding:8px 10px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #30363D;flex-shrink:0;overflow:hidden;min-height:44px">
+  <div style="flex:1;min-width:0;overflow:hidden">
+   <div id="conf-title" style="color:#fff;font-weight:700;font-size:clamp(13px,2.5vw,16px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Meeting</div>
+   <div id="conf-info" style="color:#8B949E;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Connecting...</div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+  <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;overflow-x:auto;-webkit-overflow-scrolling:touch">
    <span id="conf-timer" style="color:#58A6FF;font-size:13px;font-weight:700;font-family:monospace">00:00:00</span>
    <span id="conf-rec-badge" style="display:none;background:#da3633;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">&#9679; REC</span>
    <span id="conf-attendee-count" style="background:#21262D;color:#8B949E;padding:2px 8px;border-radius:10px;font-size:11px">1</span>
-   <button onclick="shareMeetingLink()" style="background:#21262D;color:#58A6FF;border:1px solid #30363D;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600">&#128279; Share Link</button>
-   <button onclick="minimizeMeeting()" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer" title="Keep meeting running, work elsewhere">&#8212; Min</button>
-   <button onclick="endOrLeaveMeeting()" style="background:#da3633;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer">&#9209;</button>
+   <button onclick="shareMeetingLink()" title="Copy meeting link" style="background:#21262D;color:#58A6FF;border:1px solid #30363D;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;white-space:nowrap">&#128279; Share</button>
+   <button onclick="minimizeMeeting()" title="Minimize — work elsewhere" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer">&#8212;</button>
+   <button onclick="endOrLeaveMeeting()" style="background:#da3633;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">&#9209; Leave</button>
   </div>
  </div>
 
- <!-- ── MAIN AREA: video + side panel ────────────────────────────── -->
- <div style="flex:1;display:flex;overflow:hidden;min-height:0">
+ <!-- MAIN: video area + side panel -->
+ <!-- On mobile: stacked vertically. On desktop: side by side. -->
+ <div id="conf-body" style="flex:1;display:flex;flex-direction:row;overflow:hidden;min-height:0;position:relative">
 
-  <!-- Video / Whiteboard / Screen share area -->
-  <div id="conf-main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0D1117;min-width:0">
-   <div id="video-grid" style="flex:1;display:grid;grid-template-columns:1fr;gap:6px;padding:10px;overflow:hidden;align-content:start"></div>
-   <div id="whiteboard-panel" style="display:none;flex:1;flex-direction:column;background:#1C2128;padding:8px;min-height:200px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-     <span style="color:#8B949E;font-size:12px;font-weight:600">Whiteboard</span>
-     <div style="display:flex;gap:6px">
-      <input type="color" id="wb-color" value="#1F6FEB" style="width:30px;height:24px;border:none;cursor:pointer;border-radius:4px">
-      <input type="range" id="wb-size" min="1" max="20" value="3" style="width:60px">
-      <button onclick="wbClear()" style="background:#da3633;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">Clear</button>
+  <!-- Video / Whiteboard / Screen area -->
+  <div id="conf-main" style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0D1117;min-width:0;min-height:100px">
+   <div id="video-grid" style="flex:1;display:grid;grid-template-columns:1fr;gap:6px;padding:8px;overflow-y:auto;overflow-x:hidden;align-content:start;-webkit-overflow-scrolling:touch"></div>
+   <div id="whiteboard-panel" style="display:none;flex:1;flex-direction:column;background:#1C2128;padding:6px;min-height:160px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;flex-wrap:wrap;gap:4px">
+     <span style="color:#8B949E;font-size:11px;font-weight:600">Whiteboard</span>
+     <div style="display:flex;gap:5px;align-items:center">
+      <input type="color" id="wb-color" value="#1F6FEB" style="width:28px;height:22px;border:none;cursor:pointer;border-radius:4px;flex-shrink:0">
+      <input type="range" id="wb-size" min="1" max="20" value="3" style="width:55px">
+      <button onclick="wbClear()" style="background:#da3633;color:#fff;border:none;border-radius:5px;padding:3px 8px;font-size:11px;cursor:pointer;white-space:nowrap">Clear</button>
      </div>
     </div>
-    <canvas id="wb-canvas" style="flex:1;background:#fff;border-radius:8px;cursor:crosshair;touch-action:none;width:100%;height:100%"></canvas>
+    <canvas id="wb-canvas" style="flex:1;background:#fff;border-radius:6px;cursor:crosshair;touch-action:none;width:100%;height:100%;display:block"></canvas>
    </div>
    <div id="screenshare-panel" style="display:none;flex:1;background:#1C2128;align-items:center;justify-content:center">
     <video id="screenshare-video" autoplay playsinline muted style="width:100%;height:100%;object-fit:contain"></video>
    </div>
-   <!-- Hand raised banner -->
-   <div id="hand-banner" style="display:none;background:#B45309;color:#fff;text-align:center;padding:6px;font-size:13px;font-weight:700">&#9995; Your hand is raised</div>
+   <div id="hand-banner" style="display:none;background:#B45309;color:#fff;text-align:center;padding:5px;font-size:13px;font-weight:700">&#9995; Your hand is raised</div>
   </div>
 
-  <!-- Side panel -->
+  <!-- Side panel — right on desktop, bottom-sheet on mobile -->
   <div id="conf-side" style="width:300px;background:#161B22;border-left:1px solid #30363D;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;transition:width .2s">
+   <!-- Panel tabs -->
    <div style="display:flex;border-bottom:1px solid #30363D;flex-shrink:0">
-    <button onclick="switchConfPanel('agenda')"  id="cpanel-agenda"  style="flex:1;padding:8px 4px;background:#1F6FEB;color:#fff;border:none;font-size:10px;font-weight:600;cursor:pointer">Agenda</button>
-    <button onclick="switchConfPanel('chat')"    id="cpanel-chat"    style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer">Chat</button>
-    <button onclick="switchConfPanel('actions')" id="cpanel-actions" style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer">Actions</button>
-    <button onclick="switchConfPanel('people')"  id="cpanel-people"  style="flex:1;padding:8px 4px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer">People</button>
-    <button onclick="toggleSidePanel()" style="padding:8px 6px;background:transparent;color:#8B949E;border:none;font-size:12px;cursor:pointer" title="Collapse panel">&#9664;</button>
+    <button onclick="switchConfPanel('agenda')"  id="cpanel-agenda"  style="flex:1;padding:7px 3px;background:#1F6FEB;color:#fff;border:none;font-size:10px;font-weight:600;cursor:pointer;min-width:0">Agenda</button>
+    <button onclick="switchConfPanel('chat')"    id="cpanel-chat"    style="flex:1;padding:7px 3px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer;min-width:0">Chat</button>
+    <button onclick="switchConfPanel('actions')" id="cpanel-actions" style="flex:1;padding:7px 3px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer;min-width:0">Actions</button>
+    <button onclick="switchConfPanel('people')"  id="cpanel-people"  style="flex:1;padding:7px 3px;background:transparent;color:#8B949E;border:none;font-size:10px;cursor:pointer;min-width:0">People</button>
+    <button onclick="toggleSidePanel()" title="Toggle panel" style="padding:7px 6px;background:transparent;color:#8B949E;border:none;font-size:12px;cursor:pointer;flex-shrink:0">&#9664;</button>
    </div>
-   <!-- Agenda panel -->
-   <div id="cpanel-agenda-body" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px">
+   <!-- Agenda -->
+   <div id="cpanel-agenda-body" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px">
     <div id="conf-agenda-list"></div>
     <div style="border-top:1px solid #30363D;padding-top:8px;margin-top:4px">
-     <div style="color:#8B949E;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">Decisions</div>
-     <div id="conf-decisions-list" style="font-size:12px;color:#E6EDF3;margin-bottom:8px"></div>
+     <div style="color:#8B949E;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px">Decisions</div>
+     <div id="conf-decisions-list" style="font-size:12px;color:#E6EDF3;margin-bottom:7px"></div>
      <div style="display:flex;gap:5px">
-      <input id="conf-decision-input" placeholder="Add decision..." style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:6px 8px;color:#E6EDF3;font-size:12px;outline:none">
-      <button onclick="addDecision()" style="background:#238636;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;font-weight:700">+</button>
+      <input id="conf-decision-input" placeholder="Add decision..." style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:5px;padding:5px 7px;color:#E6EDF3;font-size:12px;outline:none;min-width:0">
+      <button onclick="addDecision()" style="background:#238636;color:#fff;border:none;border-radius:5px;padding:5px 9px;font-size:13px;cursor:pointer;font-weight:700;flex-shrink:0">+</button>
      </div>
     </div>
    </div>
-   <!-- Chat panel -->
+   <!-- Chat -->
    <div id="cpanel-chat-body" style="display:none;flex:1;flex-direction:column;overflow:hidden">
-    <div id="conf-chat-messages" style="flex:1;overflow-y:auto;padding:10px;font-size:13px"></div>
-    <div style="padding:8px;border-top:1px solid #30363D;display:flex;gap:5px">
-     <input id="conf-chat-input" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChatMsg()" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:7px 10px;color:#E6EDF3;font-size:13px;outline:none">
-     <button onclick="sendChatMsg()" style="background:#1F6FEB;color:#fff;border:none;border-radius:6px;padding:7px 10px;cursor:pointer">&#10148;</button>
+    <div id="conf-chat-messages" style="flex:1;overflow-y:auto;padding:8px;font-size:13px"></div>
+    <div style="padding:7px;border-top:1px solid #30363D;display:flex;gap:5px">
+     <input id="conf-chat-input" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChatMsg()" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:5px;padding:6px 8px;color:#E6EDF3;font-size:13px;outline:none;min-width:0">
+     <button onclick="sendChatMsg()" style="background:#1F6FEB;color:#fff;border:none;border-radius:5px;padding:6px 10px;cursor:pointer;flex-shrink:0">&#10148;</button>
     </div>
    </div>
-   <!-- Actions panel -->
+   <!-- Actions -->
    <div id="cpanel-actions-body" style="display:none;flex:1;overflow-y:auto;padding:10px">
-    <div id="conf-actions-list" style="font-size:12px;color:#E6EDF3;margin-bottom:10px"></div>
-    <div style="border-top:1px solid #30363D;padding-top:10px">
-     <div style="color:#8B949E;font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:6px">Add Action</div>
-     <input id="ai-task" placeholder="Task..." style="width:100%;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:7px 8px;color:#E6EDF3;font-size:12px;outline:none;margin-bottom:5px">
+    <div id="conf-actions-list" style="font-size:12px;color:#E6EDF3;margin-bottom:9px"></div>
+    <div style="border-top:1px solid #30363D;padding-top:9px">
+     <div style="color:#8B949E;font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:5px">Add Action</div>
+     <input id="ai-task" placeholder="Task..." style="width:100%;background:#21262D;border:1px solid #30363D;border-radius:5px;padding:6px 8px;color:#E6EDF3;font-size:12px;outline:none;margin-bottom:5px;box-sizing:border-box">
      <div style="display:flex;gap:5px;margin-bottom:5px">
-      <select id="ai-owner" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:5px;color:#E6EDF3;font-size:11px"></select>
-      <input type="date" id="ai-due" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:6px;padding:5px;color:#E6EDF3;font-size:11px">
+      <select id="ai-owner" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:5px;padding:5px;color:#E6EDF3;font-size:11px;min-width:0"></select>
+      <input type="date" id="ai-due" style="flex:1;background:#21262D;border:1px solid #30363D;border-radius:5px;padding:5px;color:#E6EDF3;font-size:11px;min-width:0">
      </div>
-     <button onclick="addActionItem()" style="width:100%;background:#238636;color:#fff;border:none;border-radius:6px;padding:8px;font-size:12px;font-weight:600;cursor:pointer">+ Add</button>
+     <button onclick="addActionItem()" style="width:100%;background:#238636;color:#fff;border:none;border-radius:5px;padding:7px;font-size:12px;font-weight:600;cursor:pointer">+ Add</button>
     </div>
    </div>
-   <!-- People panel -->
-   <div id="cpanel-people-body" style="display:none;flex:1;overflow-y:auto;padding:10px">
+   <!-- People -->
+   <div id="cpanel-people-body" style="display:none;flex:1;overflow-y:auto;padding:9px">
     <div id="conf-people-list" style="font-size:12px;color:#E6EDF3"></div>
    </div>
   </div>
- </div>
 
- <!-- ── CONTROL BAR ──────────────────────────────────────────────── -->
- <div id="conf-controls" style="background:#161B22;border-top:1px solid #30363D;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;flex-wrap:wrap">
-  <button id="btn-mic"    onclick="toggleMic()"           class="ccb on"  title="Mute/Unmute">&#127908;<br><span style="font-size:9px">Mic</span></button>
-  <button id="btn-cam"    onclick="toggleCam()"           class="ccb on"  title="Camera on/off">&#128247;<br><span style="font-size:9px">Cam</span></button>
-  <button id="btn-screen" onclick="toggleScreenShare()"   class="ccb"     title="Share screen">&#128190;<br><span style="font-size:9px">Share</span></button>
-  <button id="btn-wb"     onclick="toggleWhiteboard()"    class="ccb"     title="Whiteboard">&#9998;<br><span style="font-size:9px">Board</span></button>
-  <button id="btn-rec"    onclick="toggleRecording()"     class="ccb"     title="Record">&#9679;<br><span style="font-size:9px">Rec</span></button>
-  <button id="btn-hand"   onclick="raiseHand()"           class="ccb"     title="Raise hand">&#9995;<br><span style="font-size:9px">Hand</span></button>
-  <button id="btn-lowbw"  onclick="toggleLowBandwidth()"  class="ccb"     title="Audio-only mode">&#128246;<br><span style="font-size:9px">Audio</span></button>
-  <div style="width:1px;height:36px;background:#30363D;margin:0 4px"></div>
-  <button onclick="minimizeMeeting()" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer" title="Minimize">&#8212;</button>
-  <button onclick="endOrLeaveMeeting()" style="background:#da3633;color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer">&#9209; Leave</button>
+ </div><!-- /conf-body -->
+
+ <!-- CONTROL BAR -->
+ <div id="conf-controls" style="background:#161B22;border-top:1px solid #30363D;padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:5px;flex-shrink:0;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch">
+  <button id="btn-mic"    onclick="toggleMic()"          class="ccb on"  title="Mute/Unmute">&#127908;<br><span style="font-size:9px">Mic</span></button>
+  <button id="btn-cam"    onclick="toggleCam()"          class="ccb on"  title="Camera on/off">&#128247;<br><span style="font-size:9px">Cam</span></button>
+  <button id="btn-screen" onclick="toggleScreenShare()"  class="ccb"     title="Share screen">&#128190;<br><span style="font-size:9px">Share</span></button>
+  <button id="btn-wb"     onclick="toggleWhiteboard()"   class="ccb"     title="Whiteboard">&#9998;<br><span style="font-size:9px">Board</span></button>
+  <button id="btn-rec"    onclick="toggleRecording()"    class="ccb"     title="Record">&#9679;<br><span style="font-size:9px">Rec</span></button>
+  <button id="btn-hand"   onclick="raiseHand()"          class="ccb"     title="Raise hand">&#9995;<br><span style="font-size:9px">Hand</span></button>
+  <button id="btn-lowbw"  onclick="toggleLowBandwidth()" class="ccb"     title="Audio only">&#128246;<br><span style="font-size:9px">Audio</span></button>
+  <div style="width:1px;height:30px;background:#30363D;margin:0 3px;flex-shrink:0"></div>
+  <button onclick="minimizeMeeting()" style="background:#21262D;color:#E6EDF3;border:1px solid #30363D;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">&#8212; Min</button>
+  <button onclick="endOrLeaveMeeting()" style="background:#da3633;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">&#9209; Leave</button>
  </div>
 </div>
 
@@ -4049,15 +4521,68 @@ function setSA(k,n){
  const l=document.getElementById('sal'+k);if(l)l.textContent=lb[n];
 }
 // ══ MESSAGES ══════════════════════════════════════════════════════════
-function loadMsgs(){
- const msgs=(DB.get('messages')||[]).filter(m=>m.to===CU.id);rendMsgList(msgs);
+function _curMsgTab(){ return window._msgTab||'inbox'; }
+
+function swMsgTab(tab, btn){
+ window._msgTab = tab;
+ // Update active class using data-msgtab attribute (reliable cross-browser)
+ document.querySelectorAll('[data-msgtab]').forEach(function(b){
+  if(b.getAttribute('data-msgtab')===tab){
+   b.classList.add('on');
+  } else {
+   b.classList.remove('on');
+  }
+ });
+ filtMsgs();
 }
+
+function loadMsgs(){
+ var allMsgs = DB.get('messages')||[];
+ var tab = _curMsgTab();
+ var msgs = tab==='inbox' ? allMsgs.filter(function(m){ return m.to===CU.id; })
+          : tab==='sent'  ? allMsgs.filter(function(m){ return m.from===CU.id||m.fromId===CU.id; })
+          : allMsgs.filter(function(m){ return m.to===CU.id||m.from===CU.id||m.fromId===CU.id; });
+ // Badge: unread inbox count
+ var unread = allMsgs.filter(function(m){ return m.to===CU.id && !m.read; }).length;
+ var bdg = document.getElementById('bdg-msg-inbox');
+ if(bdg){ bdg.textContent=unread; bdg.style.display=unread?'inline':'none'; }
+ rendMsgList(msgs);
+}
+
 function rendMsgList(msgs){
- document.getElementById('msgl').innerHTML=msgs.map(m=>`<div onclick="rdMsg('${m.id}')" style="padding:11px 13px;border-bottom:1px solid var(--bd);cursor:pointer;background:${m.read?'var(--bg2)':'var(--skp)'}"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:13px;font-weight:${m.read?400:600};color:var(--nv)">${m.from}<\/span><span style="font-size:10px;color:var(--t3)">${new Date(m.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'})}<\/span><\/div><div style="font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.sub}<\/div><\/div>`).join('')||'<div class="es"><p>No messages<\/p><\/div>';
+ var el = document.getElementById('msgl');
+ if(!el) return;
+ if(!msgs.length){
+  el.innerHTML='<div class="es" style="padding:24px"><div class="ei">&#9993;</div><p>No messages</p></div>';
+  return;
+ }
+ var tab = _curMsgTab();
+ el.innerHTML = msgs.map(function(m){
+  var isSent = (tab==='sent') || (m.fromId===CU.id || m.from===CU.id);
+  var isRead = m.read;
+  var date   = m.date ? new Date(m.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) : '';
+  var label  = isSent && tab!=='inbox' ? (m.toName||m.to||'Unknown') : (m.fromName||m.from||'Unknown');
+  return '<div onclick="rdMsg(\''+m.id+'\')" style="padding:11px 14px;border-bottom:1px solid var(--bd);cursor:pointer;background:'+(isRead?'var(--bg2)':'var(--skp)')+';transition:.15s" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\''+(isRead?'var(--bg2)':'var(--skp)')+'\'">'+
+   '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'+
+    '<span style="font-size:13px;font-weight:'+(isRead?400:700)+';color:var(--nv);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">'+label+'</span>'+
+    '<span style="font-size:10px;color:var(--t4);flex-shrink:0;margin-left:4px">'+date+'</span>'+
+   '</div>'+
+   '<div style="font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(isRead?'':'<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sk);margin-right:5px;flex-shrink:0;vertical-align:middle"></span>')+m.sub+'</div>'+
+  '</div>';
+ }).join('');
 }
 function filtMsgs(){
- const q=document.getElementById('msgsrch').value.toLowerCase();
- rendMsgList((DB.get('messages')||[]).filter(m=>m.to===CU.id&&(m.sub.toLowerCase().includes(q)||m.from.toLowerCase().includes(q))));
+ var q=((document.getElementById('msgsrch')||{}).value||'').toLowerCase();
+ var allMsgs=DB.get('messages')||[];
+ var tab=_curMsgTab();
+ var base = tab==='inbox' ? allMsgs.filter(function(m){ return m.to===CU.id; })
+          : tab==='sent'  ? allMsgs.filter(function(m){ return m.from===CU.id||m.fromId===CU.id; })
+          : allMsgs.filter(function(m){ return m.to===CU.id||m.from===CU.id||m.fromId===CU.id; });
+ rendMsgList(!q ? base : base.filter(function(m){
+  return (m.sub||'').toLowerCase().includes(q)||
+         (m.from||'').toLowerCase().includes(q)||
+         (m.body||'').toLowerCase().includes(q);
+ }));
 }
 function rdMsg(id){
  const msgs=DB.get('messages')||[];const idx=msgs.findIndex(m=>m.id===id);const m=msgs[idx];if(!m)return;
@@ -4319,6 +4844,83 @@ function createStf(){
 
 // ══ STAFF EDIT ════════════════════════════════════════════════════════
 
+// ══ EDIT MODAL — ACCESS PANEL HELPERS ════════════════════════════
+
+// ── TOGGLE DEACTIVATE/ACTIVATE from edit modal ────────────────────
+function toggleStaffStatus(){
+ var uid = (document.getElementById('edit-uid')||{}).value||'';
+ if(!uid){ toast('No staff selected','er'); return; }
+ if(!PERMS.canDeactivate(CU.role)){ toast('Only Administrators can activate or deactivate accounts','er'); return; }
+ var users = DB.get('users')||[];
+ var u = users.find(function(x){ return x.id===uid; });
+ if(!u){ toast('Staff account not found','er'); return; }
+ if(u.role==='admin'){ toast('Cannot deactivate the system administrator account','er'); return; }
+ if(uid===CU.id){ toast('You cannot deactivate your own account','er'); return; }
+
+ var isActive = u.st === 'Active';
+ var action   = isActive ? 'Deactivate' : 'Reactivate';
+ var msg      = isActive
+  ? 'Deactivate ' + u.fn + ' ' + u.ln + ' ('+u.sn+')?\n\nThey will not be able to log in until reactivated.'
+  : 'Reactivate ' + u.fn + ' ' + u.ln + ' ('+u.sn+')?\n\nThey will be able to log in again.';
+
+ if(!confirm(msg)) return;
+
+ var newStatus = isActive ? 'Inactive' : 'Active';
+ DB.set('users', users.map(function(x){
+  return x.id===uid ? Object.assign({},x,{st:newStatus}) : x;
+ }));
+
+ toast(u.fn+' '+u.ln+' '+( isActive ? 'deactivated' : 'reactivated'), isActive?'wa':'ok');
+ alog('ADMIN','Staff', action+': '+u.fn+' '+u.ln+' ('+u.sn+')');
+
+ closeM('medit');
+ try{ loadAdm(); } catch(e){ console.warn(e); }
+}
+
+
+function toggleAccessPanels(){
+ var role = (document.getElementById('edit-role')||{}).value||'staff';
+ // HR panel: show for hr, admin, or any staff with hr access
+ var hrPanel  = document.getElementById('acc-panel-hr');
+ var finPanel = document.getElementById('acc-panel-fin');
+ var progPanel= document.getElementById('acc-panel-prog');
+ if(!hrPanel||!finPanel||!progPanel) return;
+ // Always show all panels — but highlight the relevant one
+ hrPanel.style.opacity  = ['admin','hr','staff','manager'].indexOf(role)>=0 ? '1' : '0.6';
+ finPanel.style.opacity = ['admin','finance','staff'].indexOf(role)>=0 ? '1' : '0.6';
+ progPanel.style.opacity= '1';
+ // If role is hr, pre-tick hr_full; if finance, pre-tick fin_full
+ if(role==='hr'){
+  var hf=document.getElementById('edit-mod-hr_full');
+  if(hf&&!hf.checked){ hf.checked=true; toggleHRFull(hf); }
+ }
+ if(role==='finance'){
+  var ff=document.getElementById('edit-mod-fin_full');
+  if(ff&&!ff.checked){ ff.checked=true; toggleFinFull(ff); }
+ }
+ if(role==='program_admin'){
+  var pa=document.getElementById('edit-mod-prog_admin');
+  if(pa) pa.checked=true;
+ }
+}
+
+function toggleHRFull(cb){
+ var subs=['hr_leave','hr_onboard','hr_contracts','hr_incidents','hr_analytics','hr_gps','hr_approvals'];
+ subs.forEach(function(id){
+  var el=document.getElementById('edit-mod-'+id);
+  if(el){ el.checked=cb.checked; el.disabled=cb.checked; }
+ });
+}
+
+function toggleFinFull(cb){
+ var subs=['fin_payroll','fin_budgets','fin_expenditure','fin_coa','fin_records','fin_analytics','fin_approvals'];
+ subs.forEach(function(id){
+  var el=document.getElementById('edit-mod-'+id);
+  if(el){ el.checked=cb.checked; el.disabled=cb.checked; }
+ });
+}
+
+
 function openEdit(uid){
  if(!requirePerm('canEditStaff') && uid !== CU.id){
   toast('You can only edit your own profile from My Profile','er'); return;
@@ -4326,15 +4928,112 @@ function openEdit(uid){
  var users = DB.get('users')||[];
  var u = users.find(function(x){ return x.id===uid; });
  if(!u) return;
+
+ // Populate text/select fields
  var fields = {
-  'edit-uid':u.id, 'edit-fn':u.fn, 'edit-ln':u.ln, 'edit-em':u.em,
-  'edit-ph':u.ph||'', 'edit-dept':u.dept||'', 'edit-desg':u.desg||'',
-  'edit-role':u.role, 'edit-sal':u.bs||u.sal||0, 'edit-et':u.et||'Full-Time',
-  'edit-kra':u.kra||'', 'edit-nssf':u.nssf||'', 'edit-nhif':u.nhif||''
+  'edit-uid':u.id, 'edit-fn':u.fn||'', 'edit-ln':u.ln||'',
+  'edit-em':u.em||'', 'edit-ph':u.ph||'', 'edit-nid':u.nid||'',
+  'edit-kra':u.kra||'', 'edit-nssf':u.nssf||'', 'edit-nhif':u.nhif||'',
+  'edit-st':u.st||'Active', 'edit-dept':u.dept||'',
+  'edit-desg':u.desg||'', 'edit-et':u.et||'Full-Time',
+  'edit-sd':u.sd||'', 'edit-role':u.role||'staff',
+  'edit-bs':u.bs||u.sal||0, 'edit-ha':u.ha||0,
+  'edit-ta':u.ta||0, 'edit-ma':u.ma||0,
+  'edit-bk':u.bk||'', 'edit-bac':u.bac||'', 'edit-bbr':u.bbr||''
  };
  Object.keys(fields).forEach(function(id){
   var el=document.getElementById(id); if(el) el.value=fields[id];
  });
+
+ // Leave balances
+ var lbal = u.lbal || {Annual:21,Sick:10,Study:5,Maternity:0,Paternity:0,Compassionate:5};
+ if(typeof lbal==='string') try{lbal=JSON.parse(lbal);}catch(e){}
+ var lmap = {'edit-lbal-a':'Annual','edit-lbal-s':'Sick','edit-lbal-st':'Study',
+             'edit-lbal-m':'Maternity','edit-lbal-p':'Paternity','edit-lbal-c':'Compassionate'};
+ Object.keys(lmap).forEach(function(eid){
+  var el=document.getElementById(eid); if(el) el.value=lbal[lmap[eid]]||0;
+ });
+
+ // Reset all checkboxes first
+ var allMods=['hr_full','hr_leave','hr_onboard','hr_contracts','hr_incidents',
+  'hr_analytics','hr_gps','hr_approvals','fin_full','fin_payroll','fin_budgets',
+  'fin_expenditure','fin_coa','fin_records','fin_analytics','fin_approvals',
+  'prog_admin','health','education','environment','humanitarian','inclusivity','special'];
+ allMods.forEach(function(m){
+  var el=document.getElementById('edit-mod-'+m);
+  if(el){ el.checked=false; el.disabled=false; }
+ });
+
+ // HR access
+ var hrAccess = u.hrAccess||[];
+ var isHRFull = u.role==='hr' || hrAccess.length===7;
+ var hrFull = document.getElementById('edit-mod-hr_full');
+ if(hrFull){ hrFull.checked=isHRFull; }
+ if(isHRFull){
+  toggleHRFull({checked:true});
+ } else {
+  hrAccess.forEach(function(m){
+   var el=document.getElementById('edit-mod-'+m); if(el) el.checked=true;
+  });
+ }
+
+ // Finance access
+ var finAccess = u.finAccess||[];
+ var isFinFull = u.role==='finance' || finAccess.length===7;
+ var finFull = document.getElementById('edit-mod-fin_full');
+ if(finFull){ finFull.checked=isFinFull; }
+ if(isFinFull){
+  toggleFinFull({checked:true});
+ } else {
+  finAccess.forEach(function(m){
+   var el=document.getElementById('edit-mod-'+m); if(el) el.checked=true;
+  });
+ }
+
+ // Programme access
+ var modAccess = u.moduleAccess||[];
+ if(u.role==='program_admin'){ var pa=document.getElementById('edit-mod-prog_admin'); if(pa) pa.checked=true; }
+ modAccess.forEach(function(m){
+  var el=document.getElementById('edit-mod-'+m); if(el) el.checked=true;
+ });
+
+ // Update title and sn display
+ var title=document.getElementById('medit-title');
+ var snEl=document.getElementById('medit-sn');
+ if(title) title.textContent='Edit: '+u.fn+' '+u.ln;
+ if(snEl)  snEl.textContent='Staff ID: '+u.sn+'  |  Role: '+(u.role||'staff');
+
+ // Clear password field
+ var pwEl=document.getElementById('edit-pw'); if(pwEl) pwEl.value='';
+
+ // Show/dim panels based on role
+ toggleAccessPanels();
+
+ // Set the deactivate/activate button label and style based on current status
+ var togBtn = document.getElementById('btn-toggle-status');
+ if(togBtn){
+  var isActive = (u.st||'Active')==='Active';
+  var isAdmin  = u.role==='admin';
+  var isSelf   = u.id===CU.id;
+  var canToggle= PERMS.canDeactivate(CU.role);
+  if(!canToggle || isAdmin || isSelf){
+   togBtn.style.display = 'none';
+  } else {
+   togBtn.style.display = '';
+   if(isActive){
+    togBtn.innerHTML = '&#9940; Deactivate Account';
+    togBtn.style.background = 'var(--erb)';
+    togBtn.style.color  = 'var(--er)';
+    togBtn.style.border = '1.5px solid var(--er)';
+   } else {
+    togBtn.innerHTML = '&#9989; Reactivate Account';
+    togBtn.style.background = 'var(--okb)';
+    togBtn.style.color  = 'var(--ok)';
+    togBtn.style.border = '1.5px solid var(--ok)';
+   }
+  }
+ }
+
  openM('medit');
 }
 
@@ -4354,29 +5053,35 @@ function saveStf(){
  ['bs','ha','ta','ma','ss','lb','lm'].forEach(k=>{
   const el=document.getElementById('edit-'+k);if(el)upd[k]=parseInt(el.value)||0;
  });
- upd.dept=dept;upd.dn=DEPTS[dept]||dept;
+ var _DEPT_NAMES={EDU:'Education',HLT:'Health',HUM:'Humanitarian Aid',
+  IND:'Inclusivity & Diversity',ENV:'Environmental Sustainability',
+  SEC:'Secretariat',FIN:'Finance',HRD:'Human Resources',ICT:'ICT',ADM:'Administration'};
+ upd.dept=dept;upd.dn=_DEPT_NAMES[dept]||dept;
  upd.st=document.getElementById('edit-st').value;
  upd.et=document.getElementById('edit-et').value;
  // Role: hr_full → hr role, fin_full → finance role, prog_admin → program_admin
- const isPAd    = document.getElementById('edit-mod-prog_admin')?.checked;
- const isHRFull = document.getElementById('edit-mod-hr_full')?.checked;
- const isFinFull= document.getElementById('edit-mod-fin_full')?.checked;
+ var _el_prog=document.getElementById('edit-mod-prog_admin');
+ var isPAd    = _el_prog ? _el_prog.checked : false;
+ var _el_hrfull=document.getElementById('edit-mod-hr_full');
+ var isHRFull = _el_hrfull ? _el_hrfull.checked : false;
+ var _el_finfull=document.getElementById('edit-mod-fin_full');
+ var isFinFull= _el_finfull ? _el_finfull.checked : false;
  const selRole  = document.getElementById('edit-role').value;
  upd.role = isHRFull ? 'hr' : isFinFull ? 'finance' : isPAd ? 'program_admin' : selRole;
 
  // Save programme module access
  const modArr=['health','education','environment','humanitarian','inclusivity','special']
-  .filter(m=>document.getElementById('edit-mod-'+m)?.checked);
+  .filter(function(m){var el=document.getElementById('edit-mod-'+m);return el&&el.checked;});
  upd.moduleAccess=modArr;
 
  // Save granular HR sub-module access
  const hrArr=['hr_leave','hr_onboard','hr_contracts','hr_incidents','hr_analytics','hr_gps','hr_approvals']
-  .filter(m=>document.getElementById('edit-mod-'+m)?.checked);
+  .filter(function(m){var el=document.getElementById('edit-mod-'+m);return el&&el.checked;});
  upd.hrAccess=isHRFull?['hr_leave','hr_onboard','hr_contracts','hr_incidents','hr_analytics','hr_gps','hr_approvals']:hrArr;
 
  // Save granular Finance sub-module access
  const finArr=['fin_payroll','fin_budgets','fin_expenditure','fin_coa','fin_records','fin_analytics','fin_approvals']
-  .filter(m=>document.getElementById('edit-mod-'+m)?.checked);
+  .filter(function(m){var el=document.getElementById('edit-mod-'+m);return el&&el.checked;});
  upd.finAccess=isFinFull?['fin_payroll','fin_budgets','fin_expenditure','fin_coa','fin_records','fin_analytics','fin_approvals']:finArr;
  upd.av=(fn[0]||'?').toUpperCase()+(ln[0]||'?').toUpperCase();
  upd.lbal={
